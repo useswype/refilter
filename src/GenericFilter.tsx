@@ -10,7 +10,6 @@ import {
   type ComponentType,
 } from 'react';
 
-import { Button } from './Button';
 import { ShortcutSkeleton } from './ShortcutSkeleton';
 
 import { FilterContext } from './utils';
