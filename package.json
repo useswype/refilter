@@ -1,5 +1,5 @@
 {
-  "name": "generic-filter",
+  "name": "swypex-generic-filter",
   "version": "0.0.0",
   "description": "testing",
   "main": "output/index.js",
@@ -22,6 +22,8 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.0",
+    "@rollup/plugin-image": "^3.0.3",
     "qs": "^6.13.0",
     "tslib": "^2.8.1"
   },

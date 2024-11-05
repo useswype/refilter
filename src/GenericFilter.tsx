@@ -1,5 +1,4 @@
-import { Popover } from '@headlessui/react';
-import { useTranslations } from 'next-intl';
+import { Popover, PopoverPanel } from '@headlessui/react';
 import qs from 'qs';
 import {
   type Dispatch,
@@ -11,15 +10,17 @@ import {
   type ComponentType,
 } from 'react';
 
-import { Button } from '@/components/Button';
+import { Button } from './Button';
 import { ShortcutSkeleton } from './ShortcutSkeleton';
 
 import { FilterContext } from './utils';
 
-import CloseIcon from '@/public/close.svg';
-import FilterBtnIcon from '@/public/filter_btn_icon.svg';
-import FilterDownArrow from '@/public/filter_down_arrow.svg';
-import FilterItemArrow from '@/public/filter_item_arrow.svg';
+
+import CloseIcon from './assets/close.svg';
+import FilterBtnIcon from './assets/filter_btn_icon.svg';
+import FilterDownArrow from './assets/filter_down_arrow.svg';
+import FilterItemArrow from './assets/filter_item_arrow.svg';
+import Spinner from './assets/spinner.svg';
 
 export interface FilterComponentProps<V> {
   title: string;
@@ -75,7 +76,6 @@ export function GenericFilter<T extends Record<string, any>>({
   handleRef,
   setAreFiltersApplied,
 }: GenericFilterProps<T>) {
-  const t = useTranslations('filter');
 
   const filterItemArray = useMemo(() => {
     const orderedFilterItems =
@@ -229,7 +229,7 @@ export function GenericFilter<T extends Record<string, any>>({
             <Popover.Button className="flex items-center justify-center gap-1 rounded-lg border border-gray-200 p-1 shadow-filter-button focus:outline-none">
               <FilterBtnIcon />
               <span className="text-sm font-medium text-gray-900">
-                {t('filter_btn_title')}
+                Filter
               </span>
               <FilterDownArrow />
             </Popover.Button>
@@ -272,17 +272,17 @@ export function GenericFilter<T extends Record<string, any>>({
                 }}
                 className="flex-shrink-0 text-sm font-medium text-blue-400"
               >
-                {t('reset_filters_shortcuts')}
+                Reset Filters
               </button>
             </div>
           )}
         </div>
-        <Popover.Panel className="absolute z-[99] mt-1 grid h-[520px] grid-cols-3 grid-rows-[auto,1fr] flex-col overflow-hidden rounded-xl bg-white shadow-popup sm:w-11/12 md:w-11/12 lg:w-11/12 xl:w-1/2">
+        <PopoverPanel className="absolute z-[99] mt-1 grid h-[520px] grid-cols-3 grid-rows-[auto,1fr] flex-col overflow-hidden rounded-xl bg-white shadow-popup sm:w-11/12 md:w-11/12 lg:w-11/12 xl:w-1/2">
           {({ close }) => (
             <>
               <div className="col-span-4 flex h-fit items-center justify-between border-b p-4">
                 <p className="text-sm font-normal text-gray-900">
-                  {t('filter_title')}
+                 Filters
                 </p>
                 <button
                   type="button"
@@ -368,26 +368,26 @@ export function GenericFilter<T extends Record<string, any>>({
                     void handleApply(defaultValues);
                   }}
                 >
-                  {t('reset_all_button_title')}
+                  Reset All
                 </button>
-                <Button
+                <button
                   type="button"
-                  kind="primary"
-                  size="medium"
+                  className='bg-blue-400 hover:bg-blue-500 text-white disabled:text-gray-500 active:bg-blue-600 disabled:bg-gray-200 disabled:cursor-not-allowed h-10 px-3 py-2'
                   disabled={disableApplyFilterButton}
-                  isLoading={isApplyLoading}
+                  // isLoading={isApplyLoading}
                   onClick={async () => {
                     await handleApply(value);
                     close();
                   }}
                 >
-                  {t('apply_filters_button_title')}
-                </Button>
+                 Apply 
+                </button>
               </div>
             </>
           )}
-        </Popover.Panel>
+        </PopoverPanel>
       </Popover>
     </FilterContext.Provider>
   );
+
 }
