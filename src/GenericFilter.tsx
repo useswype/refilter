@@ -1,8 +1,6 @@
-import { Popover, PopoverPanel } from '@headlessui/react';
-import qs from 'qs';
+import { Popover, PopoverButton } from '@headlessui/react';
+
 import {
-  type Dispatch,
-  type SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -10,10 +8,10 @@ import {
   type ComponentType,
 } from 'react';
 
+
 import { ShortcutSkeleton } from './ShortcutSkeleton';
 
 import { FilterContext } from './utils';
-
 
 import CloseIcon from './assets/close.svg';
 import FilterBtnIcon from './assets/filter_btn_icon.svg';
@@ -40,34 +38,27 @@ export interface Filterer<T extends Record<string, any>, K extends keyof T> {
     Shortcut: ComponentType<ShortcutComponentProps<T[K]>>;
     comparator: (a: T[K], b: T[K]) => boolean;
     getBadgeCount?: (value: T[K]) => number;
-    stringify: (value: T[K], defaultValue: T[K]) => string | null;
-    parse: (string: string, defaultValue: T[K]) => T[K];
   };
   defaultValue: T[K];
   extraProps?: any;
 }
 
-export interface GenericFilterHandleRef<T extends Record<string, any>> {
-  resetFilter: () => void;
-  apply: (value: T) => void;
-  stringify: (value: T) => string;
-  parse: (string: string) => T;
-}
-
 export interface GenericFilterProps<T extends Record<string, any>> {
-  onChange?: (value: T) => void | Promise<void>;
+  value: T;
+  onChange: (value: T) => void | Promise<void>;
   filterers: {
     [K in keyof T]: Filterer<T, K>;
   };
   order?: Array<keyof T>;
   onApply: (value: T) => boolean | Promise<boolean>;
   onFiltererSelect?: (key: keyof T) => void;
+  handleRef?: (ref: { resetFilter: () => void }) => void;
   setAreFiltersApplied?: (value: boolean) => void;
-  handleRef?: (ref: GenericFilterHandleRef<T>) => void;
 }
 
 export function GenericFilter<T extends Record<string, any>>({
   onChange: propOnChange,
+  value,
   filterers,
   order,
   onApply,
@@ -76,22 +67,13 @@ export function GenericFilter<T extends Record<string, any>>({
   setAreFiltersApplied,
 }: GenericFilterProps<T>) {
 
+  const [appliedFilterValue, setAppliedFilterValue] = useState<T>(value);
+
   const filterItemArray = useMemo(() => {
     const orderedFilterItems =
       order !== undefined ? order : (Object.keys(filterers) as Array<keyof T>);
     return orderedFilterItems.map((item) => [item, filterers[item]] as const);
   }, [order, filterers]);
-
-  const [value, setValue] = useState(
-    Object.fromEntries(
-      filterItemArray.map(([key, val]) => [key, val.defaultValue])
-    ) as T
-  );
-  const [appliedFilterValue, _setAppliedFilterValue] = useState<T>(value);
-
-  const setAppliedFilterValue: Dispatch<SetStateAction<T>> = (arg) => {
-    _setAppliedFilterValue(arg);
-  };
 
   const haveFiltersChanged = !filterItemArray.every(([key, filterer]) => {
     const result = filterer.FilterComponent.comparator(
@@ -131,10 +113,7 @@ export function GenericFilter<T extends Record<string, any>>({
 
   const onChange = useCallback(
     (value: T): void | Promise<void> => {
-      setValue(value);
-      if (propOnChange) {
-        void propOnChange(value);
-      }
+      void propOnChange(value);
     },
     [propOnChange]
   );
@@ -154,51 +133,14 @@ export function GenericFilter<T extends Record<string, any>>({
     setIsApplyLoading(false);
   }
 
-  const refApply = useCallback((value: T) => {
-    setValue(value);
-    setAppliedFilterValue(value);
-  }, []);
-
   const ref = useMemo(
     () => ({
       resetFilter: () => {
         setAppliedFilterValue(defaultValues);
         void onChange(defaultValues);
       },
-      apply: refApply,
-      stringify: (value: T): string => {
-        return qs.stringify(
-          Object.fromEntries(
-            filterItemArray
-              .map(([filtererKey, filtererValue]) => {
-                return [
-                  filtererKey,
-                  filtererValue.FilterComponent.stringify(
-                    value[filtererKey],
-                    defaultValues[filtererKey]
-                  ),
-                ];
-              })
-              .filter(([key, value]) => value !== null)
-          )
-        );
-      },
-      parse: (string: string): T => {
-        const params = qs.parse(string);
-        return Object.fromEntries(
-          filterItemArray.map(([filtererKey, filtererValue]) => {
-            return [
-              filtererKey,
-              filtererValue.FilterComponent.parse(
-                params[filtererKey] as string,
-                defaultValues[filtererKey]
-              ),
-            ];
-          })
-        ) as T;
-      },
     }),
-    [defaultValues, onChange, refApply, filterItemArray]
+    [defaultValues, onChange]
   );
 
   const checkAppliedFilter = useCallback(() => {
@@ -225,13 +167,13 @@ export function GenericFilter<T extends Record<string, any>>({
       <Popover>
         <div className="flex overflow-hidden">
           <div className="flex items-center gap-4 overflow-x-auto">
-            <Popover.Button className="flex items-center justify-center gap-1 rounded-lg border border-gray-200 p-1 shadow-filter-button focus:outline-none">
+            <PopoverButton className="flex items-center justify-center gap-1 rounded-lg border border-gray-200 p-1 shadow-filter-button focus:outline-none">
               <FilterBtnIcon />
               <span className="text-sm font-medium text-gray-900">
                 Filter
               </span>
               <FilterDownArrow />
-            </Popover.Button>
+            </PopoverButton>
             <div className="flex gap-3 overflow-hidden overflow-x-auto [&::-webkit-scrollbar]:hidden [&>*]:shrink-0 [&>*]:basis-[max-content]">
               {filterItemArray.map(([key, filterItem]) => {
                 const { FilterComponent, defaultValue, title } = filterItem;
@@ -276,12 +218,12 @@ export function GenericFilter<T extends Record<string, any>>({
             </div>
           )}
         </div>
-        <PopoverPanel className="absolute z-[99] mt-1 grid h-[520px] grid-cols-3 grid-rows-[auto,1fr] flex-col overflow-hidden rounded-xl bg-white shadow-popup sm:w-11/12 md:w-11/12 lg:w-11/12 xl:w-1/2">
+        <Popover.Panel className="absolute z-[99] mt-1 grid h-[520px] w-11/12 grid-cols-3 grid-rows-[auto,1fr] flex-col overflow-hidden rounded-xl bg-white shadow-popup lg:w-2/3 2xl:w-1/2">
           {({ close }) => (
             <>
               <div className="col-span-4 flex h-fit items-center justify-between border-b p-4">
                 <p className="text-sm font-normal text-gray-900">
-                 Filters
+                Filters
                 </p>
                 <button
                   type="button"
@@ -384,9 +326,8 @@ export function GenericFilter<T extends Record<string, any>>({
               </div>
             </>
           )}
-        </PopoverPanel>
+        </Popover.Panel>
       </Popover>
     </FilterContext.Provider>
   );
-
 }

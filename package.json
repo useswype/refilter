@@ -4,14 +4,19 @@
   "description": "testing",
   "main": "output/index.js",
   "type": "module",
+  "types": "output/types",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "bundle": "rollup -c rollup.config.js"
   },
+  "files": [
+    "./output/"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@rollup/plugin-typescript": "^12.1.1",
+    "@svgr/rollup": "^8.1.0",
     "@types/node": "^22.8.7",
     "@types/qs": "^6.9.16",
     "@types/react": "^18.3.12",
@@ -23,12 +28,13 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
-    "@rollup/plugin-image": "^3.0.3",
     "qs": "^6.13.0",
     "tslib": "^2.8.1"
   },
   "peerDependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "@types/react": "18.x",
+    "@types/react-dom": "18.x",
+    "react": "18.x",
+    "react-dom": "18.x"
   }
 }

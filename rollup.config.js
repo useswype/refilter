@@ -1,5 +1,5 @@
 import typescript from '@rollup/plugin-typescript';
-import image from '@rollup/plugin-image';
+import svgr from '@svgr/rollup'
 
 /** @type {import('rollup').RollupOptions} */
 const config = {
@@ -8,7 +8,7 @@ const config = {
         dir: 'output',
         format: 'es',
     },
-    plugins: [typescript({ tsconfig: './tsconfig.json' }), image()],
+    plugins: [typescript({ tsconfig: './tsconfig.json' }), svgr()],
     external: ['react', 'react-dom', 'react/jsx-runtime']
 };
 
