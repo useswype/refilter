@@ -1,11 +1,40 @@
 {
-  "name": "generic-filter",
+  "name": "swypex-generic-filter",
   "version": "0.0.0",
-  "main": "index.ts",
+  "description": "testing",
+  "main": "output/index.js",
+  "type": "module",
+  "types": "output/types",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bundle": "rollup -c rollup.config.js"
   },
+  "files": [
+    "./output/"
+  ],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^12.1.1",
+    "@svgr/rollup": "^8.1.0",
+    "@types/node": "^22.8.7",
+    "@types/qs": "^6.9.16",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "rollup": "^4.24.3",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.0",
+    "qs": "^6.13.0",
+    "tslib": "^2.8.1"
+  },
+  "peerDependencies": {
+    "@types/react": "18.x",
+    "@types/react-dom": "18.x",
+    "react": "18.x",
+    "react-dom": "18.x"
+  }
 }
