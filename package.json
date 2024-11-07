@@ -1,6 +1,6 @@
 {
   "name": "swypex-generic-filter",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "testing",
   "main": "output/index.js",
   "type": "module",
@@ -12,7 +12,7 @@
   "files": [
     "./output/"
   ],
-  "author": "",
+  "author": "eng@swypex.com",
   "license": "ISC",
   "devDependencies": {
     "@rollup/plugin-typescript": "^12.1.1",
