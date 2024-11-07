@@ -8,7 +8,6 @@ import {
   type ComponentType,
 } from 'react';
 
-
 import { ShortcutSkeleton } from './ShortcutSkeleton';
 
 import { FilterContext } from './utils';
@@ -66,7 +65,6 @@ export function GenericFilter<T extends Record<string, any>>({
   handleRef,
   setAreFiltersApplied,
 }: GenericFilterProps<T>) {
-
   const [appliedFilterValue, setAppliedFilterValue] = useState<T>(value);
 
   const filterItemArray = useMemo(() => {
@@ -169,9 +167,7 @@ export function GenericFilter<T extends Record<string, any>>({
           <div className="flex items-center gap-4 overflow-x-auto">
             <PopoverButton className="flex items-center justify-center gap-1 rounded-lg border border-gray-200 p-1 shadow-filter-button focus:outline-none">
               <FilterBtnIcon />
-              <span className="text-sm font-medium text-gray-900">
-                Filter
-              </span>
+              <span className="text-sm font-medium text-gray-900">Filter</span>
               <FilterDownArrow />
             </PopoverButton>
             <div className="flex gap-3 overflow-hidden overflow-x-auto [&::-webkit-scrollbar]:hidden [&>*]:shrink-0 [&>*]:basis-[max-content]">
@@ -222,9 +218,7 @@ export function GenericFilter<T extends Record<string, any>>({
           {({ close }) => (
             <>
               <div className="col-span-4 flex h-fit items-center justify-between border-b p-4">
-                <p className="text-sm font-normal text-gray-900">
-                Filters
-                </p>
+                <p className="text-sm font-normal text-gray-900">Filters</p>
                 <button
                   type="button"
                   className="h-7 w-7 rounded-lg border border-gray-400 bg-gray-100 align-middle hover:bg-gray-200"
@@ -313,7 +307,7 @@ export function GenericFilter<T extends Record<string, any>>({
                 </button>
                 <button
                   type="button"
-                  className='bg-blue-400 hover:bg-blue-500 text-white disabled:text-gray-500 active:bg-blue-600 disabled:bg-gray-200 disabled:cursor-not-allowed h-10 px-3 py-2'
+                  className="bg-blue-400 hover:bg-blue-500 text-white disabled:text-gray-500 active:bg-blue-600 disabled:bg-gray-200 disabled:cursor-not-allowed h-10 px-3 py-2"
                   disabled={disableApplyFilterButton}
                   onClick={async () => {
                     await handleApply(value);
@@ -321,7 +315,7 @@ export function GenericFilter<T extends Record<string, any>>({
                   }}
                 >
                   {isApplyLoading && <Spinner />}
-                 Apply 
+                  Apply
                 </button>
               </div>
             </>

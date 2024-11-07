@@ -1,29 +1,46 @@
 {
   "name": "@swypex/refilter",
   "version": "1.0.0",
-  "description": "testing",
-  "main": "output/index.js",
+  "author": "Swypex Engineering <eng@swypex.com> (https://www.swypex.com)",
+  "description": "React components for filtering a table",
   "type": "module",
-  "types": "output/types",
+  "main": "output/index.js",
+  "types": "output/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run build",
     "bundle": "rollup -c rollup.config.js"
   },
   "files": [
-    "./output/"
+    "output"
   ],
-  "author": "Swypex Engineering <eng@swypex.com> (https://www.swypex.com)",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/useswype/refilter.git"
+  },
+  "keywords": [
+    "react",
+    "table",
+    "headlessui",
+    "filter"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-typescript": "^12.1.1",
     "@svgr/rollup": "^8.1.0",
     "@types/node": "^22.8.7",
     "@types/qs": "^6.9.16",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "prettier": "3.3.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "rollup": "^4.24.3",
+    "rollup-plugin-dts": "^6.1.1",
     "typescript": "^5.6.3"
   },
   "dependencies": {
