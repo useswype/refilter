@@ -12,7 +12,7 @@
   "files": [
     "./output/"
   ],
-  "author": "eng@swypex.com",
+  "author": "Swypex Engineering <eng@swypex.com> (https://www.swypex.com)",
   "license": "ISC",
   "devDependencies": {
     "@rollup/plugin-typescript": "^12.1.1",
