@@ -1,5 +1,5 @@
 {
-  "name": "swypex-generic-filter",
+  "name": "@swypex/refilter",
   "version": "1.0.0",
   "description": "testing",
   "main": "output/index.js",
