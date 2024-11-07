@@ -1,2 +1,6 @@
-/node_modules
-/output
+node_modules
+output
+.DS_Store
+
+.env
+*.code-workspace
