@@ -18,6 +18,12 @@ import FilterDownArrow from './assets/filter_down_arrow.svg';
 import FilterItemArrow from './assets/filter_item_arrow.svg';
 import Spinner from './assets/spinner.svg';
 
+export interface GenericFilterClassNames {
+  applyButton?: string;
+  resetAll?: (isDisabled: boolean) => string;
+  filterFooter?: string;
+}
+
 export interface FilterComponentProps<V> {
   title: string;
   value: V;
@@ -53,6 +59,7 @@ export interface GenericFilterProps<T extends Record<string, any>> {
   onFiltererSelect?: (key: keyof T) => void;
   handleRef?: (ref: { resetFilter: () => void }) => void;
   setAreFiltersApplied?: (value: boolean) => void;
+  classNames?: GenericFilterClassNames;
 }
 
 export function GenericFilter<T extends Record<string, any>>({
@@ -64,6 +71,7 @@ export function GenericFilter<T extends Record<string, any>>({
   onFiltererSelect,
   handleRef,
   setAreFiltersApplied,
+  classNames = {},
 }: GenericFilterProps<T>) {
   const [appliedFilterValue, setAppliedFilterValue] = useState<T>(value);
 
@@ -292,11 +300,9 @@ export function GenericFilter<T extends Record<string, any>>({
                   {...activeFilterer.extraProps}
                 />
               </div>
-              <div className="col-span-4 flex h-14 items-center justify-end gap-5 border-t px-5">
+              <div className={classNames.filterFooter}>
                 <button
-                  className={`text-sm font-semibold ${
-                    disableResetButton ? 'text-gray-500' : 'text-blue-400'
-                  } `}
+                  className={classNames.resetAll ? classNames.resetAll(disableResetButton) : ''} 
                   disabled={disableResetButton}
                   onClick={async () => {
                     void onChange(defaultValues);
@@ -307,7 +313,7 @@ export function GenericFilter<T extends Record<string, any>>({
                 </button>
                 <button
                   type="button"
-                  className="bg-blue-400 hover:bg-blue-500 text-white disabled:text-gray-500 active:bg-blue-600 disabled:bg-gray-200 disabled:cursor-not-allowed h-10 px-3 py-2"
+                  className={classNames.applyButton}
                   disabled={disableApplyFilterButton}
                   onClick={async () => {
                     await handleApply(value);
