@@ -2,6 +2,14 @@ import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
 import svgr from '@svgr/rollup';
 
+import packageJson from './package.json' with { type: 'json' };
+
+const banner = `/*!
+ * ${packageJson.name} v${packageJson.version}
+ * (c) ${new Date().getFullYear()} ${packageJson.author}
+ * @license MIT
+ */`;
+
 /** @type {import('rollup').RollupOptions} */
 const config = [
   {
@@ -11,6 +19,7 @@ const config = [
         dir: 'output',
         format: 'es',
         sourcemap: true,
+        banner,
       },
     ],
     plugins: [typescript({ tsconfig: './tsconfig.json' }), svgr()],
@@ -21,6 +30,7 @@ const config = [
     output: {
       file: 'output/index.d.ts',
       format: 'es',
+      banner,
     },
     plugins: [dts()],
   },
