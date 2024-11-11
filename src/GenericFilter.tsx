@@ -19,7 +19,7 @@ import FilterItemArrow from './assets/filter_item_arrow.svg';
 import Spinner from './assets/spinner.svg';
 
 export interface GenericFilterClassNames {
-  filterContaine?: string;
+  filterContainer?: string;
   filterContent?: string;
   filterButton?: string;
   filterItemsContainer?: string;
@@ -191,7 +191,7 @@ export function GenericFilter<T extends Record<string, any>>({
   return (
     <FilterContext.Provider value={{ value, onChange }}>
       <Popover>
-        <div className={classNames.filterContaine}>
+        <div className={classNames.filterContainer}>
           <div className={classNames.filterContent}>
             <PopoverButton className={classNames.filterButton}>
               <FilterBtnIcon />
