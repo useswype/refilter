@@ -17,7 +17,6 @@ import FilterBtnIcon from './assets/filter_btn_icon.svg';
 import FilterDownArrow from './assets/filter_down_arrow.svg';
 import FilterItemArrow from './assets/filter_item_arrow.svg';
 import Spinner from './assets/spinner.svg';
-import { createStyledGenericFilter } from './createStyledGenericFilter';
 
 export interface GenericFilterClassNames {
   filterContainer?: string;
