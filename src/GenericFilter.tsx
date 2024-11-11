@@ -22,8 +22,10 @@ export interface GenericFilterClassNames {
   filterContainer?: string;
   filterContent?: string;
   filterButton?: string;
+  filterButtonTitle?: string;
   filterItemsContainer?: string;
   resetFilterContainer?: string;
+  resetFilterTitle?: string;
   filterModalContainer?: string;
   filterHeader?: string;
   filterHeaderTitle?: string;
@@ -195,7 +197,7 @@ export function GenericFilter<T extends Record<string, any>>({
           <div className={classNames.filterContent}>
             <PopoverButton className={classNames.filterButton}>
               <FilterBtnIcon />
-              <span className="text-sm font-medium text-gray-900">Filter</span>
+              <span className={classNames.filterButtonTitle}>Filter</span>
               <FilterDownArrow />
             </PopoverButton>
             <div className={classNames.filterItemsContainer}>
@@ -235,7 +237,7 @@ export function GenericFilter<T extends Record<string, any>>({
                   void onChange(defaultValues);
                   void handleApply(defaultValues);
                 }}
-                className="flex-shrink-0 text-sm font-medium text-blue-400"
+                className={classNames.resetFilterTitle}
               >
                 Reset Filters
               </button>
