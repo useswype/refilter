@@ -1,4 +1,4 @@
-import { Popover, PopoverButton } from '@headlessui/react';
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
 
 import {
   useCallback,
@@ -19,6 +19,28 @@ import FilterItemArrow from './assets/filter_item_arrow.svg';
 import Spinner from './assets/spinner.svg';
 
 export interface GenericFilterClassNames {
+  filterContainer?: string;
+  filterContent?: string;
+  filterButton?: string;
+  filterButtonTitle?: string;
+  filterItemsContainer?: string;
+  resetFilterContainer?: string;
+  resetFilterTitle?: string;
+  filterModalContainer?: string;
+  filterHeader?: string;
+  filterHeaderTitle?: string;
+  closeButton?: string;
+  filterItemsList?: string;
+  filterItem?: (isActive: boolean) => string;
+  filterItemContent?: string;
+  filterItemTitle?: string;
+  badge?: string;
+  badgeContainer?: string;
+  badgeTitleContainer?: string;
+  badgeTitle?: string;
+  filterItemArrowContainer?: string;
+  filterItemArrow?: string;
+  filterComponentContainer?: string;
   applyButton?: string;
   resetAll?: (isDisabled: boolean) => string;
   filterFooter?: string;
@@ -171,14 +193,14 @@ export function GenericFilter<T extends Record<string, any>>({
   return (
     <FilterContext.Provider value={{ value, onChange }}>
       <Popover>
-        <div className="flex overflow-hidden">
-          <div className="flex items-center gap-4 overflow-x-auto">
-            <PopoverButton className="flex items-center justify-center gap-1 rounded-lg border border-gray-200 p-1 shadow-filter-button focus:outline-none">
+        <div className={classNames.filterContainer}>
+          <div className={classNames.filterContent}>
+            <PopoverButton className={classNames.filterButton}>
               <FilterBtnIcon />
-              <span className="text-sm font-medium text-gray-900">Filter</span>
+              <span className={classNames.filterButtonTitle}>Filter</span>
               <FilterDownArrow />
             </PopoverButton>
-            <div className="flex gap-3 overflow-hidden overflow-x-auto [&::-webkit-scrollbar]:hidden [&>*]:shrink-0 [&>*]:basis-[max-content]">
+            <div className={classNames.filterItemsContainer}>
               {filterItemArray.map(([key, filterItem]) => {
                 const { FilterComponent, defaultValue, title } = filterItem;
                 if (isApplyLoading) {
@@ -209,27 +231,27 @@ export function GenericFilter<T extends Record<string, any>>({
             </div>
           </div>
           {areAppliedFiltersDefault && (
-            <div className="flex items-center justify-end ps-12">
+            <div className={classNames.resetFilterContainer}>
               <button
                 onClick={async () => {
                   void onChange(defaultValues);
                   void handleApply(defaultValues);
                 }}
-                className="flex-shrink-0 text-sm font-medium text-blue-400"
+                className={classNames.resetFilterTitle}
               >
                 Reset Filters
               </button>
             </div>
           )}
         </div>
-        <Popover.Panel className="absolute z-[99] mt-1 grid h-[520px] w-11/12 grid-cols-3 grid-rows-[auto,1fr] flex-col overflow-hidden rounded-xl bg-white shadow-popup lg:w-2/3 2xl:w-1/2">
+        <PopoverPanel className={classNames.filterModalContainer}>
           {({ close }) => (
             <>
-              <div className="col-span-4 flex h-fit items-center justify-between border-b p-4">
-                <p className="text-sm font-normal text-gray-900">Filters</p>
+              <div className={classNames.filterHeader}>
+                <p className={classNames.filterHeaderTitle}>Filters</p>
                 <button
                   type="button"
-                  className="h-7 w-7 rounded-lg border border-gray-400 bg-gray-100 align-middle hover:bg-gray-200"
+                  className={classNames.closeButton}
                   data-testid="filter-drawer-close-btn"
                   onClick={() => {
                     close();
@@ -238,7 +260,7 @@ export function GenericFilter<T extends Record<string, any>>({
                   <CloseIcon className="inline-block stroke-gray-800" />
                 </button>
               </div>
-              <ul className="col-span-1 flex flex-col gap-2 border-e border-gray-300 bg-gray-25 px-2 pt-3">
+              <ul className={classNames.filterItemsList}>
                 {filterItemArray.map(([key, filterItem]) => {
                   const {
                     title,
@@ -254,22 +276,18 @@ export function GenericFilter<T extends Record<string, any>>({
                           onFiltererSelect?.(key);
                           setActive(key);
                         }}
-                        className={`flex h-9 w-full items-center justify-start text-nowrap hover:rounded-lg hover:bg-blue-50 hover:text-blue-400 ${
-                          key === active
-                            ? 'rounded-lg bg-blue-50 font-medium text-blue-400'
-                            : 'font-normal'
-                        }`}
+                        className={classNames.filterItem ? classNames.filterItem(key === active) : ''}
                       >
-                        <div className="flex w-full items-center justify-start">
-                          <div className="flex w-1/2 items-start justify-start">
+                        <div className={classNames.filterItemContent}>
+                          <div className={classNames.filterItemTitle}>
                             <span className="px-4 text-sm">{title}</span>
                           </div>
 
-                          <div className="flex w-1/3 items-end">
-                            <div className="flex w-full items-end justify-end">
+                          <div className={classNames.badge}>
+                            <div className={classNames.badgeContainer}>
                               {!!badgeCount && (
-                                <div className="flex w-full items-end justify-end px-1 py-2">
-                                  <span className="flex h-6 w-6 flex-col justify-center rounded-full bg-blue-400 text-xs text-white">
+                                <div className={classNames.badgeTitleContainer}>
+                                  <span className={classNames.badgeTitle}>
                                     {badgeCount}
                                   </span>
                                 </div>
@@ -277,9 +295,9 @@ export function GenericFilter<T extends Record<string, any>>({
                             </div>
                           </div>
 
-                          <div className="w-1/12">
+                          <div className={classNames.filterItemArrowContainer}>
                             {key === active && (
-                              <div className="flex items-center justify-center rtl:rotate-180">
+                              <div className={classNames.filterItemArrow}>
                                 <FilterItemArrow />
                               </div>
                             )}
@@ -290,7 +308,7 @@ export function GenericFilter<T extends Record<string, any>>({
                   );
                 })}
               </ul>
-              <div className="col-span-3 flex h-full flex-col gap-5 overflow-hidden">
+              <div className={classNames.filterComponentContainer}>
                 <activeFilterer.FilterComponent
                   title={activeFilterer.title}
                   value={value[active]}
@@ -326,7 +344,7 @@ export function GenericFilter<T extends Record<string, any>>({
               </div>
             </>
           )}
-        </Popover.Panel>
+        </PopoverPanel>
       </Popover>
     </FilterContext.Provider>
   );
