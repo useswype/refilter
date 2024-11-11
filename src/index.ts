@@ -1,2 +1,2 @@
-export * from './GenericFilter';
+export * from './UnstyledGenericFilter';
 export * from './createStyledGenericFilter';
