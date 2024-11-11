@@ -29,6 +29,16 @@ export interface GenericFilterClassNames {
   filterHeaderTitle?: string;
   closeButton?: string;
   filterItemsList?: string;
+  filterItem?: (isActive: boolean) => string;
+  filterItemContent?: string;
+  filterItemTitle?: string;
+  badge?: string;
+  badgeContainer?: string;
+  badgeTitleContainer?: string;
+  badgeTitle?: string;
+  filterItemArrowContainer?: string;
+  filterItemArrow?: string;
+  filterComponentContainer?: string;
   applyButton?: string;
   resetAll?: (isDisabled: boolean) => string;
   filterFooter?: string;
@@ -264,22 +274,18 @@ export function GenericFilter<T extends Record<string, any>>({
                           onFiltererSelect?.(key);
                           setActive(key);
                         }}
-                        className={`flex h-9 w-full items-center justify-start text-nowrap hover:rounded-lg hover:bg-blue-50 hover:text-blue-400 ${
-                          key === active
-                            ? 'rounded-lg bg-blue-50 font-medium text-blue-400'
-                            : 'font-normal'
-                        }`}
+                        className={classNames.filterItem ? classNames.filterItem(key === active) : ''}
                       >
-                        <div className="flex w-full items-center justify-start">
-                          <div className="flex w-1/2 items-start justify-start">
+                        <div className={classNames.filterItemContent}>
+                          <div className={classNames.filterItemTitle}>
                             <span className="px-4 text-sm">{title}</span>
                           </div>
 
-                          <div className="flex w-1/3 items-end">
-                            <div className="flex w-full items-end justify-end">
+                          <div className={classNames.badge}>
+                            <div className={classNames.badgeContainer}>
                               {!!badgeCount && (
-                                <div className="flex w-full items-end justify-end px-1 py-2">
-                                  <span className="flex h-6 w-6 flex-col justify-center rounded-full bg-blue-400 text-xs text-white">
+                                <div className={classNames.badgeTitleContainer}>
+                                  <span className={classNames.badgeTitle}>
                                     {badgeCount}
                                   </span>
                                 </div>
@@ -287,9 +293,9 @@ export function GenericFilter<T extends Record<string, any>>({
                             </div>
                           </div>
 
-                          <div className="w-1/12">
+                          <div className={classNames.filterItemArrowContainer}>
                             {key === active && (
-                              <div className="flex items-center justify-center rtl:rotate-180">
+                              <div className={classNames.filterItemArrow}>
                                 <FilterItemArrow />
                               </div>
                             )}
@@ -300,7 +306,7 @@ export function GenericFilter<T extends Record<string, any>>({
                   );
                 })}
               </ul>
-              <div className="col-span-3 flex h-full flex-col gap-5 overflow-hidden">
+              <div className={classNames.filterComponentContainer}>
                 <activeFilterer.FilterComponent
                   title={activeFilterer.title}
                   value={value[active]}
