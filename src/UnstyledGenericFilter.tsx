@@ -84,7 +84,7 @@ export interface GenericFilterProps<T extends Record<string, any>> {
   classNames?: GenericFilterClassNames;
 }
 
-export function GenericFilter<T extends Record<string, any>>({
+export function UnStyledGenericFilter<T extends Record<string, any>>({
   onChange: propOnChange,
   value,
   filterers,
