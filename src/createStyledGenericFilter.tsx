@@ -1,13 +1,17 @@
-import { UnStyledGenericFilter, type GenericFilterClassNames, type GenericFilterProps } from './UnstyledGenericFilter';
-
+import { 
+  UnStyledGenericFilter, 
+  type GenericFilterClassNames,
+  type GenericFilterProps 
+} from './UnstyledGenericFilter';
+  
 const defaultStyles: GenericFilterClassNames = {
-    filterContainer: 'flex overflow-hidden',
+  filterContainer: 'flex overflow-hidden',
   filterContent: 'flex items-center gap-4 overflow-x-auto',
   filterButton:
     'flex items-center justify-center gap-1 rounded-lg border border-gray-200 p-1 shadow-filter-button focus:outline-none',
   filterItemsContainer:
     'flex gap-3 overflow-hidden overflow-x-auto [&::-webkit-scrollbar]:hidden [&>*]:shrink-0 [&>*]:basis-[max-content]',
-  filterButtonTitle: 'text-sm font-medium text-red-900',
+  filterButtonTitle: 'text-sm font-medium text-gray-900',
   resetFilterContainer: 'flex items-center justify-end ps-12',
   resetFilterTitle: 'flex-shrink-0 text-sm font-medium text-blue-400',
   filterModalContainer:
