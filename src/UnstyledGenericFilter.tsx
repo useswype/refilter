@@ -17,6 +17,7 @@ import FilterBtnIcon from './assets/filter_btn_icon.svg';
 import FilterDownArrow from './assets/filter_down_arrow.svg';
 import FilterItemArrow from './assets/filter_item_arrow.svg';
 import Spinner from './assets/spinner.svg';
+import { twMerge } from 'tailwind-merge'
 
 export interface GenericFilterClassNames {
   filterContainer?: string;
@@ -193,14 +194,14 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
   return (
     <FilterContext.Provider value={{ value, onChange }}>
       <Popover>
-        <div className={classNames.filterContainer}>
-          <div className={classNames.filterContent}>
-            <PopoverButton className={classNames.filterButton}>
+        <div className={twMerge(classNames.filterContainer)}>
+          <div className={twMerge(classNames.filterContent)}>
+            <PopoverButton className={twMerge(classNames.filterButton)}>
               <FilterBtnIcon />
-              <span className={classNames.filterButtonTitle}>Filter</span>
+              <span className={twMerge(classNames.filterButtonTitle)}>Filter</span>
               <FilterDownArrow />
             </PopoverButton>
-            <div className={classNames.filterItemsContainer}>
+            <div className={twMerge(classNames.filterItemsContainer)}>
               {filterItemArray.map(([key, filterItem]) => {
                 const { FilterComponent, defaultValue, title } = filterItem;
                 if (isApplyLoading) {
@@ -231,27 +232,27 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
             </div>
           </div>
           {areAppliedFiltersDefault && (
-            <div className={classNames.resetFilterContainer}>
+            <div className={twMerge(classNames.resetFilterContainer)}>
               <button
                 onClick={async () => {
                   void onChange(defaultValues);
                   void handleApply(defaultValues);
                 }}
-                className={classNames.resetFilterTitle}
+                className={twMerge(classNames.resetFilterTitle)}
               >
                 Reset Filters
               </button>
             </div>
           )}
         </div>
-        <PopoverPanel className={classNames.filterModalContainer}>
+        <PopoverPanel className={twMerge(classNames.filterModalContainer)}>
           {({ close }) => (
             <>
-              <div className={classNames.filterHeader}>
-                <p className={classNames.filterHeaderTitle}>Filters</p>
+              <div className={twMerge(classNames.filterHeader)}>
+                <p className={twMerge(classNames.filterHeaderTitle)}>Filters</p>
                 <button
                   type="button"
-                  className={classNames.closeButton}
+                  className={twMerge(classNames.closeButton)}
                   data-testid="filter-drawer-close-btn"
                   onClick={() => {
                     close();
@@ -260,7 +261,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                   <CloseIcon className="inline-block stroke-gray-800" />
                 </button>
               </div>
-              <ul className={classNames.filterItemsList}>
+              <ul className={twMerge(classNames.filterItemsList)}>
                 {filterItemArray.map(([key, filterItem]) => {
                   const {
                     title,
@@ -278,16 +279,16 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                         }}
                         className={classNames.filterItem ? classNames.filterItem(key === active) : ''}
                       >
-                        <div className={classNames.filterItemContent}>
-                          <div className={classNames.filterItemTitle}>
+                        <div className={twMerge(classNames.filterItemContent)}>
+                          <div className={twMerge(classNames.filterItemTitle)}>
                             <span className="px-4 text-sm">{title}</span>
                           </div>
 
-                          <div className={classNames.badge}>
-                            <div className={classNames.badgeContainer}>
+                          <div className={twMerge(classNames.badge)}>
+                            <div className={twMerge(classNames.badgeContainer)}>
                               {!!badgeCount && (
-                                <div className={classNames.badgeTitleContainer}>
-                                  <span className={classNames.badgeTitle}>
+                                <div className={twMerge(classNames.badgeTitleContainer)}>
+                                  <span className={twMerge(classNames.badgeTitle)}>
                                     {badgeCount}
                                   </span>
                                 </div>
@@ -295,9 +296,9 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                             </div>
                           </div>
 
-                          <div className={classNames.filterItemArrowContainer}>
+                          <div className={twMerge(classNames.filterItemArrowContainer)}>
                             {key === active && (
-                              <div className={classNames.filterItemArrow}>
+                              <div className={twMerge(classNames.filterItemArrow)}>
                                 <FilterItemArrow />
                               </div>
                             )}
@@ -308,7 +309,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                   );
                 })}
               </ul>
-              <div className={classNames.filterComponentContainer}>
+              <div className={twMerge(classNames.filterComponentContainer)}>
                 <activeFilterer.FilterComponent
                   title={activeFilterer.title}
                   value={value[active]}
@@ -318,7 +319,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                   {...activeFilterer.extraProps}
                 />
               </div>
-              <div className={classNames.filterFooter}>
+              <div className={twMerge(classNames.filterFooter)}>
                 <button
                   className={classNames.resetAll ? classNames.resetAll(disableResetButton) : ''} 
                   disabled={disableResetButton}
@@ -331,7 +332,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                 </button>
                 <button
                   type="button"
-                  className={classNames.applyButton}
+                  className={twMerge(classNames.applyButton)}
                   disabled={disableApplyFilterButton}
                   onClick={async () => {
                     await handleApply(value);
