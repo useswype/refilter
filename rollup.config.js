@@ -2,6 +2,7 @@ import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
 import svgr from '@svgr/rollup';
 import postcss from "rollup-plugin-postcss";
+import nodeResolve from "@rollup/plugin-node-resolve";
 
 /** @type {import('rollup').RollupOptions} */
 const config = [
@@ -14,7 +15,7 @@ const config = [
         sourcemap: true,
       },
     ],
-    plugins: [typescript({ tsconfig: './tsconfig.json' }), svgr(), postcss({
+    plugins: [typescript({ tsconfig: './tsconfig.json' }), svgr(), nodeResolve({ resolveOnly: ['tailwind-merge', '@headlessui/react', 'qs'] }), postcss({
       extract: true,
       minimize: true,
     })],

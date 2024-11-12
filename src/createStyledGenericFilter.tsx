@@ -1,10 +1,11 @@
-import { 
-  UnStyledGenericFilter, 
+import {
+  UnStyledGenericFilter,
   type GenericFilterClassNames,
-  type GenericFilterProps 
+  type GenericFilterProps
 } from './UnstyledGenericFilter';
-  
-const defaultStyles: GenericFilterClassNames = {
+import { twMerge } from 'tailwind-merge'
+
+const defaultStyles: Required<GenericFilterClassNames> = {
   filterContainer: 'flex overflow-hidden',
   filterContent: 'flex items-center gap-4 overflow-x-auto',
   filterButton:
@@ -53,6 +54,27 @@ export function createStyledGenericFilter(
   return function GenericFilterWithStyles<T extends Record<string, any>>(
     props: GenericFilterProps<T>
   ) {
-    return <UnStyledGenericFilter {...props} classNames={{...defaultStyles, ...styles}} />;
+    const defaultStylesKeys: GenericFilterClassNames = Object.fromEntries((Object.keys(defaultStyles) as Array<keyof GenericFilterClassNames>).map((item) => {
+      const defaultStyle = defaultStyles[item];
+
+      if (typeof defaultStyle === 'function') {
+        const overrideStyle = styles[item] as Function | undefined;
+        const propStyle = props.classNames?.[item] as Function | undefined;
+        return [item, (...args: any[]) => {
+          return twMerge([
+            (defaultStyle as Function)(...args),
+            overrideStyle ? overrideStyle(...args) : '',
+            propStyle ? propStyle(...args) : '',
+          ]);
+        }]
+      }
+
+      const overrideStyle = styles[item] as string | undefined;
+      const propStyle = props.classNames?.[item] as string | undefined;
+
+      return [item, twMerge(defaultStyle, overrideStyle, propStyle)];
+    }));
+
+    return <UnStyledGenericFilter {...props} classNames={defaultStylesKeys} />;
   };
 }
