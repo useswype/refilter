@@ -1,6 +1,7 @@
+ 
 <p align="center">
   <a href="https://www.npmjs.com/package/@swypex/refilter" rel="noopener">
- <img src="https://i.postimg.cc/y6Fym7v3/image-4.png" alt="Project logo"></a>
+ <img src="./src/assets/emblem.png" alt="Project logo"></a>
 </p>
 
 <h1 align="center">@swypex/refilter</h1>
@@ -25,89 +26,119 @@ A powerful and flexible React library to effortlessly add robust filtering capab
 
 - <a href="#about">About</a>
 - <a href="#getting_started">Getting Started</a>
-- [Deployment](#deployment)
-- [Usage](#usage)
-- [Built Using](#built_using)
-- [TODO](../TODO.md)
-- [Contributing](../CONTRIBUTING.md)
-- [Authors](#authors)
-- [Acknowledgments](#acknowledgement)
+- <a href="#deployment">Deployment</a>
+- <a href="#usage">Usage</a>
+- <a href="#built_using">Built Using</a>
+- [Contributing](https://github.com/useswype/refilter/graphs/contributors)
+- <a href="#authors">Authors</a>
+
 
 ##  <span id="about">🧐 About</span>
 
-Write about 1-2 paragraphs describing the purpose of your project.
+This project aims to enhance the filtering capabilities of tables and lists within various applications. This project aims to streamline data analysis and information retrieval processes by providing a comprehensive filtering tool package. The package offers a range of filtering options, including text search, numerical range selection, and custom filtering criteria. With its user-friendly interface and efficient algorithms, this project empowers users to quickly and accurately filter large datasets, saving time and effort.
 
 ## <span id="getting_started">🏁 Getting Started</span>
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
-
-### Prerequisites
-
-What things you need to install the software and how to install them.
-
-```
-Give examples
-```
 
 ### Installing
-
-A step by step series of examples that tell you how to get a development env running.
-
-Say what the step will be
+make sure you have node version >= 16 and react 
 
 ```
-Give the example
+npm i @swypex/refilter
+``` 
+
+add this on global css 
+
+```
+@import '~@swypex/refilter/output/main.css';
 ```
 
-And repeat
+## 🎈 Usage <a id="usage"></a>
 
-```
-until finished
-```
 
 End with an example of getting some data out of the system or using it for a little demo.
+## - If you need to add custom style for the filter 
+```
+import { createStyledGenericFilter } from '@swypex/refilter';
 
-## 🔧 Running the tests <a name = "tests"></a>
+export const StyledGenericFilter = createStyledGenericFilter({
+  closeButton: 'bg-red-100',
+});
 
-Explain how to run the automated tests for this system.
 
-### Break down into end to end tests
+import { StyledGenericFilter as GenericFilter } from '@/components/GenericFilterWrapper';
 
-Explain what these tests test and why
+<GenericFilter />
+```
+## - If you need to add specific style for the filter 
+```
+import { GenericFilter } from '@swypex/refilter';
+
+<GenericFilter
+  classname={{
+    closeButton: 'bg-red-100',
+  }}
+/>
+```
+## - If you need to use the default swypex design system  
+```
+import { GenericFilter } from '@swypex/refilter';
+
+<GenericFilter />
+```
+## - How to create your filter component
+### the filter component has the constant boilerplate code you need to follow 
 
 ```
-Give an example
+import {
+  type ShortcutComponentProps,
+  type FilterComponentProps,
+} from '@swypex/refilter';
+
+export interface FilterComponentProps {
+  status: Nullable<boolean>;
+}
+
+export function FilterComponent(props: FilterComponentProps<FilterComponentProps>) {
+  const { onChange, value } = props;
+  retrun (
+    <div></div>
+  )
+}
+
+
+function FilterComponentFilterShortcut(props: ShortcutComponentProps<FilterComponentProps>) {
+  const { value, onChange } = props;
+    retrun (
+    <div></div>
+  )
+}
+
+FilterComponent.Shortcut = FilterComponentFilterShortcut;
+
+FilterComponent.comparator = (a: FilterComponentProps, b: FilterComponentProps) => {
+  return a?.status === b?.status;
+};
+
+FilterComponent.getBadgeCount = (value: FilterComponentProps) => {
+  return value.status !== null ? 1 : 0;
+};
+
 ```
 
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## 🎈 Usage <a name="usage"></a>
-
-Add notes about how to use the system.
-
-## 🚀 Deployment <a name = "deployment"></a>
+## 🚀 Deployment <a id="deployment"></a>
 
 Add additional notes about how to deploy this on a live system.
 
-## ⛏️ Built Using <a name = "built_using"></a>
+## ⛏️ Built Using <a id="built_using"></a>
 
-- [MongoDB](https://www.mongodb.com/) - Database
-- [Express](https://expressjs.com/) - Server Framework
-- [VueJs](https://vuejs.org/) - Web Framework
-- [NodeJs](https://nodejs.org/en/) - Server Environment
+- [Rollup](https://rollupjs.org/)
 
-## ✍️ Authors <a name = "authors"></a>
+```
+npm run bundle
+```
+
+
+## ✍️ Authors <a id="authors"></a>
 
 See also the list of [contributors](https://github.com/useswype/refilter/graphs/contributors) who participated in this project.
-
-## 🎉 Acknowledgements <a name = "acknowledgement"></a>
-
-- Hat tip to anyone whose code was used
-- Inspiration
-- References
