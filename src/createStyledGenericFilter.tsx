@@ -28,7 +28,7 @@ const defaultStyles: Required<GenericFilterClassNames> = {
     `text-sm font-semibold  ${isDisabled ? 'text-gray-500' : 'text-blue-400'} `,
 
   applyButton:
-    'bg-blue-400 hover:bg-blue-500 text-white disabled:text-gray-500 active:bg-blue-600 disabled:bg-gray-200 disabled:cursor-not-allowed h-10 px-3 py-2',
+    'flex flex-row items-center justify-center rounded-lg font-normal bg-blue-400 hover:bg-blue-500 text-white disabled:text-gray-500 active:bg-blue-600 disabled:bg-gray-200 disabled:cursor-not-allowed h-10 px-3 py-2',
 
   filterFooter:
     'col-span-4 flex h-14 items-center justify-end gap-5 border-t px-5',
