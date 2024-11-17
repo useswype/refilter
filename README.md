@@ -27,7 +27,7 @@ A powerful and flexible React library to effortlessly add robust filtering capab
 
 ## 🧐 About
 
-This project aims to enhance the filtering capabilities of tables and lists within various applications. This project aims to streamline data analysis and information retrieval processes by providing a comprehensive filtering tool package. The package offers a range of filtering options, including text search, numerical range selection, and custom filtering criteria. With its user-friendly interface and efficient algorithms, this project empowers users to quickly and accurately filter large datasets, saving time and effort.
+This package is an ideal solution for implementing advanced, strongly-typed filtering systems. By focusing on managing filter states and interactions, it allows developers to invest their time where it matters most: creating tailored filter UIs and handling business logic.
 
 
 ## 🎥 Demo / Working
