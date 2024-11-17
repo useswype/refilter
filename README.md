@@ -25,13 +25,12 @@ A powerful and flexible React library to effortlessly add robust filtering capab
 ## 📝 Table of Contents
 
 - [About](#-about)
-- <a href="#getting_started">Getting Started</a>
-- <a href="#deployment">Deployment</a>
-- <a href="#usage">Usage</a>
-- <a href="#built_using">Built Using</a>
+- [Getting Started](#-getting_started)
+- [Deployment](#-deployment)
+- [Usage](#-usage)
+- [Built Using](#-built_using)
 - [Contributing](https://github.com/useswype/refilter/graphs/contributors)
-- <a href="#authors">Authors</a>
-
+- [Authors](#-authors)
 
 ## 🧐 About
 
