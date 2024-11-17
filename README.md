@@ -36,7 +36,7 @@ A powerful and flexible React library to effortlessly add robust filtering capab
 
 This project aims to enhance the filtering capabilities of tables and lists within various applications. This project aims to streamline data analysis and information retrieval processes by providing a comprehensive filtering tool package. The package offers a range of filtering options, including text search, numerical range selection, and custom filtering criteria. With its user-friendly interface and efficient algorithms, this project empowers users to quickly and accurately filter large datasets, saving time and effort.
 
-## <span id="getting_started">🏁 Getting Started</span>
+## 🏁 Getting Started
 
 
 ### Installing
@@ -52,10 +52,8 @@ add this on global css
 @import '~@swypex/refilter/output/main.css';
 ```
 
-## 🎈 Usage <a id="usage"></a>
+## 🎈 Usage
 
-
-End with an example of getting some data out of the system or using it for a little demo.
 ## - If you need to add custom style for the filter 
 ```
 import { createStyledGenericFilter } from '@swypex/refilter';
@@ -116,20 +114,20 @@ function FilterComponentFilterShortcut(props: ShortcutComponentProps<FilterCompo
 FilterComponent.Shortcut = FilterComponentFilterShortcut;
 
 FilterComponent.comparator = (a: FilterComponentProps, b: FilterComponentProps) => {
-  return a?.status === b?.status;
+  retrun a?.status === b?.status;
 };
 
 FilterComponent.getBadgeCount = (value: FilterComponentProps) => {
-  return value.status !== null ? 1 : 0;
+  retrun value.status !== null ? 1 : 0;
 };
 
 ```
 
-## 🚀 Deployment <a id="deployment"></a>
+## 🚀 Deployment
 
 Add additional notes about how to deploy this on a live system.
 
-## ⛏️ Built Using <a id="built_using"></a>
+## ⛏️ Built Using
 
 - [Rollup](https://rollupjs.org/)
 
@@ -138,6 +136,6 @@ npm run bundle
 ```
 
 
-## ✍️ Authors <a id="authors"></a>
+## ✍️ Authors
 
 See also the list of [contributors](https://github.com/useswype/refilter/graphs/contributors) who participated in this project.
