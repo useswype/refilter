@@ -8,7 +8,7 @@
 
 <div align="center">
 
-[![Status](https://img.shields.io/badge/status-active-success.svg)]()
+[![Status](https://img.shields.io/badge/status-active-success.svg)](https://github.com/useswype/refilter/)
 [![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)]()
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
@@ -29,7 +29,6 @@ A powerful and flexible React library to effortlessly add robust filtering capab
 - [Usage](#-usage)
 - [Built Using](#-built-using)
 - [Contributing](https://github.com/useswype/refilter/graphs/contributors)
-- [Authors](#-authors)
 
 ## 🧐 About
 
