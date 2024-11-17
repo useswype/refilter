@@ -133,3 +133,7 @@ FilterComponent.getBadgeCount = (value: FilterComponentProps) => {
 ```
 npm run bundle
 ```
+
+## 💭 Preview
+
+![Working](./src/assets/preview.png)

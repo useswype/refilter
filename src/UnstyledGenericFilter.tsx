@@ -339,7 +339,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                   }}
                 >
                   {isApplyLoading && <Spinner />}
-                  Apply
+                  Apply Filters
                 </button>
               </div>
             </>
