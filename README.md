@@ -43,7 +43,7 @@ This project aims to enhance the filtering capabilities of tables and lists with
 
 
 ### Installing
-make sure you have node version >= 16 and react 
+Make sure you have node version >= 16 and react version >= 16
 
 ```
 npm i @swypex/refilter
