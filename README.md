@@ -25,7 +25,7 @@ A powerful and flexible React library to effortlessly add robust filtering capab
 ## 📝 Table of Contents
 
 - [About](#-about)
-- [Getting Started](#-getting_started)
+- [Getting Started](#-getting-started)
 - [Deployment](#-deployment)
 - [Usage](#-usage)
 - [Built Using](#-built_using)
