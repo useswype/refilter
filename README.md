@@ -27,7 +27,7 @@ A powerful and flexible React library to effortlessly add robust filtering capab
 - [About](#-about)
 - [Getting Started](#-getting-started)
 - [Usage](#-usage)
-- [Deployment](#-deployment)
+- [Built Using](#-built-using)
 - [Contributing](https://github.com/useswype/refilter/graphs/contributors)
 - [Authors](#-authors)
 
@@ -126,10 +126,6 @@ FilterComponent.getBadgeCount = (value: FilterComponentProps) => {
 };
 
 ```
-
-## 🚀 Deployment
-
-Add additional notes about how to deploy this on a live system.
 
 ## ⛏️ Built Using
 
