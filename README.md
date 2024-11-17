@@ -134,8 +134,3 @@ FilterComponent.getBadgeCount = (value: FilterComponentProps) => {
 ```
 npm run bundle
 ```
-
-
-## ✍️ Authors
-
-See also the list of [contributors](https://github.com/useswype/refilter/graphs/contributors) who participated in this project.
