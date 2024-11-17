@@ -1,8 +1,4 @@
- 
-<p align="center">
-  <a href="https://www.npmjs.com/package/@swypex/refilter" rel="noopener">
- <img src="./src/assets/emblem.png" alt="Project logo"></a>
-</p>
+ [![Logo](./src/assets/emblem.png)](https://www.npmjs.com/package/@swypex/refilter)
 
 <h1 align="center">@swypex/refilter</h1>
 
@@ -17,10 +13,9 @@
 
 ---
 
-<p align="center">
+
 A powerful and flexible React library to effortlessly add robust filtering capabilities to your applications, simplifies creating dynamic and interactive user interfaces, allowing users to filter through large datasets easily
-    <br> 
-</p>
+
 
 ## 📝 Table of Contents
 
@@ -49,7 +44,7 @@ Make sure you have node version >= 16 and react version >= 16
 npm i @swypex/refilter
 ``` 
 
-add this on global css 
+add this on to `globals.css` 
 
 ```
 @import '~@swypex/refilter/output/main.css';
@@ -75,7 +70,7 @@ import { StyledGenericFilter as GenericFilter } from '@/components/GenericFilter
 import { GenericFilter } from '@swypex/refilter';
 
 <GenericFilter
-  classname={{
+  classNames={{
     closeButton: 'bg-red-100',
   }}
 />
@@ -101,7 +96,7 @@ export interface FilterComponentProps {
 
 export function FilterComponent(props: FilterComponentProps<FilterComponentProps>) {
   const { onChange, value } = props;
-  retrun (
+  return (
     <div></div>
   )
 }
@@ -109,7 +104,7 @@ export function FilterComponent(props: FilterComponentProps<FilterComponentProps
 
 function FilterComponentFilterShortcut(props: ShortcutComponentProps<FilterComponentProps>) {
   const { value, onChange } = props;
-    retrun (
+    return (
     <div></div>
   )
 }
@@ -117,11 +112,11 @@ function FilterComponentFilterShortcut(props: ShortcutComponentProps<FilterCompo
 FilterComponent.Shortcut = FilterComponentFilterShortcut;
 
 FilterComponent.comparator = (a: FilterComponentProps, b: FilterComponentProps) => {
-  retrun a?.status === b?.status;
+  return a?.status === b?.status;
 };
 
 FilterComponent.getBadgeCount = (value: FilterComponentProps) => {
-  retrun value.status !== null ? 1 : 0;
+  return value.status !== null ? 1 : 0;
 };
 
 ```
