@@ -43,7 +43,7 @@ This package is an ideal solution for implementing advanced, strongly-typed filt
 
 ## 💭 Preview
 
-![Working](./src/assets/preview.png) is 
+![Working](./src/assets/preview.png)
 
 ## 🏁 Getting Started
 
