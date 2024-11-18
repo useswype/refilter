@@ -29,22 +29,33 @@ A powerful and flexible React library to effortlessly add robust filtering capab
 
 This package is an ideal solution for implementing advanced, strongly-typed filtering systems. By focusing on managing filter states and interactions, it allows developers to invest their time where it matters most: creating tailored filter UIs and handling business logic.
 
+### Key Features
+- Simplified State Management: Offload the complexity of managing filter states, freeing you to focus on building filter-specific UI and business logic.
+- Dynamic Badge System: Automatically generate badges for applied filters, offering quick access to remove or modify them.
+- Customizable UI: Define the rendering of badges, sidepanel items & content for each filter.
+- Overridable Styles: Customize all class names, or use the provided HOC to style the component once and return a tailored version.
+- Strongly Typed: Built with TypeScript, ensuring a type-safe and robust developer experience.
+
 
 ## 🎥 Demo / Working
 
 ![Working](./src/assets/demo.gif)
 
+## 💭 Preview
+
+![Working](./src/assets/preview.png) is 
+
 ## 🏁 Getting Started
 
 
-### Installing
+### Installation
 Make sure you have node version >= 16 and react version >= 16
 
 ```
 npm i @swypex/refilter
 ``` 
 
-add this on to `globals.css` 
+Import this style sheet 
 
 ```
 @import '~@swypex/refilter/output/main.css';
@@ -52,7 +63,7 @@ add this on to `globals.css`
 
 ## 🎈 Usage
 
-## - If you need to add custom style for the filter 
+## - If you need to create a custom styled generic filter
 ```
 import { createStyledGenericFilter } from '@swypex/refilter';
 
@@ -85,50 +96,44 @@ import { GenericFilter } from '@swypex/refilter';
 ### the filter component has the constant boilerplate code you need to follow 
 
 ```
-import {
-  type ShortcutComponentProps,
-  type FilterComponentProps,
-} from '@swypex/refilter';
-
-export interface FilterComponentProps {
-  status: Nullable<boolean>;
+export interface FilterComponentValue {
+  value: Nullable<boolean>;
 }
 
-export function FilterComponent(props: FilterComponentProps<FilterComponentProps>) {
+export function FilterComponent(
+  props: FilterComponentProps<FilterComponentValue>
+) {
   const { onChange, value } = props;
-  return (
-    <div></div>
-  )
+  return <div></div>;
 }
 
-
-function FilterComponentFilterShortcut(props: ShortcutComponentProps<FilterComponentProps>) {
+function FilterComponentFilterShortcut(
+  props: ShortcutComponentProps<FilterComponentValue>
+) {
   const { value, onChange } = props;
-    return (
-    <div></div>
-  )
+  return <div></div>;
 }
 
 FilterComponent.Shortcut = FilterComponentFilterShortcut;
 
-FilterComponent.comparator = (a: FilterComponentProps, b: FilterComponentProps) => {
-  return a?.status === b?.status;
+FilterComponent.comparator = (
+  a: FilterComponentValue,
+  b: FilterComponentValue
+) => {
+  return a.value === b.value;
 };
 
-FilterComponent.getBadgeCount = (value: FilterComponentProps) => {
-  return value.status !== null ? 1 : 0;
+FilterComponent.getBadgeCount = (value: FilterComponentValue) => {
+  return value.value !== null ? 1 : 0;
 };
-
 ```
 
 ## ⛏️ Built Using
-
+- [React](https://react.dev/)
+- [Tailwind](https://tailwindcss.com/)
+- [Typescript](https://www.typescriptlang.org/)
 - [Rollup](https://rollupjs.org/)
 
 ```
 npm run bundle
 ```
-
-## 💭 Preview
-
-![Working](./src/assets/preview.png)
