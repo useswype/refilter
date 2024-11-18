@@ -63,6 +63,13 @@ Import this style sheet
 
 ## 🎈 Usage
 
+### Default Swypex design  
+```
+import { GenericFilter } from '@swypex/refilter';
+
+<GenericFilter />
+```
+
 ### Custom styled generic filter
 ```
 import { createStyledGenericFilter } from '@swypex/refilter';
@@ -85,12 +92,6 @@ import { GenericFilter } from '@swypex/refilter';
     closeButton: 'bg-red-100',
   }}
 />
-```
-### Default Swypex design  
-```
-import { GenericFilter } from '@swypex/refilter';
-
-<GenericFilter />
 ```
 ## How to create your filter component
 ### the filter component has the constant boilerplate code you need to follow 
