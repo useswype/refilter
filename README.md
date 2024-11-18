@@ -134,6 +134,3 @@ FilterComponent.getBadgeCount = (value: FilterComponentValue) => {
 - [Typescript](https://www.typescriptlang.org/)
 - [Rollup](https://rollupjs.org/)
 
-```
-npm run bundle
-```
