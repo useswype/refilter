@@ -14,7 +14,7 @@
 ---
 
 
-A powerful and flexible React library to effortlessly add robust filtering capabilities to your applications, simplifies creating dynamic and interactive user interfaces, allowing users to filter through large datasets easily
+A powerful and flexible React library to effortlessly add robust filtering capabilities to your applications, simplifies creating dynamic and interactive user interfaces, allowing users to filter through large datasets easily.
 
 
 ## 📝 Table of Contents
@@ -63,7 +63,7 @@ Import this style sheet
 
 ## 🎈 Usage
 
-## - If you need to create a custom styled generic filter
+### Custom styled generic filter
 ```
 import { createStyledGenericFilter } from '@swypex/refilter';
 
@@ -76,7 +76,7 @@ import { StyledGenericFilter as GenericFilter } from '@/components/GenericFilter
 
 <GenericFilter />
 ```
-## - If you need to add specific style for the filter 
+### Specific style for the filter 
 ```
 import { GenericFilter } from '@swypex/refilter';
 
@@ -86,13 +86,13 @@ import { GenericFilter } from '@swypex/refilter';
   }}
 />
 ```
-## - If you need to use the default swypex design system  
+### Default Swypex design  
 ```
 import { GenericFilter } from '@swypex/refilter';
 
 <GenericFilter />
 ```
-## - How to create your filter component
+## How to create your filter component
 ### the filter component has the constant boilerplate code you need to follow 
 
 ```
