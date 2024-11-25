@@ -82,6 +82,11 @@ export interface GenericFilterProps<T extends Record<string, any>> {
   handleRef?: (ref: { resetFilter: () => void }) => void;
   setAreFiltersApplied?: (value: boolean) => void;
   classNames?: GenericFilterClassNames;
+  filterBtnTitle?: string;
+  resetFiltersShortcuts?: string;
+  resetAllButtonTitle?: string;
+  applyFiltersButtonTitle?: string;
+  
 }
 
 export function UnStyledGenericFilter<T extends Record<string, any>>({
@@ -94,6 +99,10 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
   handleRef,
   setAreFiltersApplied,
   classNames = {},
+  filterBtnTitle = '',
+  resetFiltersShortcuts = '',
+  resetAllButtonTitle = '',
+  applyFiltersButtonTitle = '',
 }: GenericFilterProps<T>) {
   const [appliedFilterValue, setAppliedFilterValue] = useState<T>(value);
 
@@ -197,7 +206,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
           <div className={classNames.filterContent}>
             <PopoverButton className={classNames.filterButton}>
               <FilterBtnIcon />
-              <span className={classNames.filterButtonTitle}>Filter</span>
+              <span className={classNames.filterButtonTitle}>{filterBtnTitle}</span>
               <FilterDownArrow />
             </PopoverButton>
             <div className={classNames.filterItemsContainer}>
@@ -239,7 +248,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                 }}
                 className={classNames.resetFilterTitle}
               >
-                Reset Filters
+               {resetFiltersShortcuts}
               </button>
             </div>
           )}
@@ -327,7 +336,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                     void handleApply(defaultValues);
                   }}
                 >
-                  Reset All
+                  {resetAllButtonTitle}
                 </button>
                 <button
                   type="button"
@@ -338,8 +347,8 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                     close();
                   }}
                 >
-                  {isApplyLoading && <Spinner />}
-                  Apply Filters
+                  {isApplyLoading && <Spinner className="animate-spin"/>}
+                  {applyFiltersButtonTitle}
                 </button>
               </div>
             </>
