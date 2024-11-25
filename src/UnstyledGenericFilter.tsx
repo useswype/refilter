@@ -348,7 +348,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                   }}
                 >
                   {isApplyLoading && <Spinner className="animate-spin"/>}
-                  {applyFiltersButtonTitle}
+                  {!isApplyLoading ? applyFiltersButtonTitle : ''}
                 </button>
               </div>
             </>
