@@ -33,8 +33,8 @@ const defaultStyles: Required<GenericFilterClassNames> = {
   filterFooter:
     'col-span-4 flex h-14 items-center justify-end gap-5 border-t px-5',
   filterItem: (isActive) =>
-    `flex h-9 w-full items-center justify-start text-nowrap hover:rounded-lg hover:bg-blue-50 
-      hover:text-blue-400 ${isActive === true ? 'rounded-lg bg-blue-50 font-medium text-blue-400' : 'font-normal'}`,
+    `flex h-9 w-full items-center justify-start text-nowrap hover:rounded-lg hover:bg-blue-50 text-gray-900
+    ${isActive === true ? 'rounded-lg bg-blue-50 font-medium text-blue-400' : 'font-normal'}`,
   filterItemContent: 'flex w-full items-center justify-start',
   filterItemTitle: 'flex w-1/2 items-start justify-start',
   badge: 'flex w-1/3 items-end',

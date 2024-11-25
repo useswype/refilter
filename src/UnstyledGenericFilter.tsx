@@ -99,10 +99,10 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
   handleRef,
   setAreFiltersApplied,
   classNames = {},
-  filterBtnTitle = '',
-  resetFiltersShortcuts = '',
-  resetAllButtonTitle = '',
-  applyFiltersButtonTitle = '',
+  filterBtnTitle = 'Filters',
+  resetFiltersShortcuts = 'Reset Filters',
+  resetAllButtonTitle = 'Reset All',
+  applyFiltersButtonTitle = 'Apply Filters',
 }: GenericFilterProps<T>) {
   const [appliedFilterValue, setAppliedFilterValue] = useState<T>(value);
 
