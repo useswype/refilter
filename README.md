@@ -1,4 +1,4 @@
- [![Logo](./src/assets/emblem.png)](https://www.npmjs.com/package/@swypex/refilter)
+[![Logo](./src/assets/emblem.png)](https://www.npmjs.com/package/@swypex/refilter)
 
 <h1 align="center">@swypex/refilter</h1>
 
@@ -14,8 +14,8 @@
 ---
 
 
-A powerful and flexible React library to effortlessly add robust filtering capabilities to your applications, simplifies creating dynamic and interactive user interfaces, allowing users to filter through large datasets easily.
-
+A powerful and flexible React library to effortlessly add robust filtering capabilities to your applications, simplifies
+creating dynamic and interactive user interfaces, allowing users to filter through large datasets easily.
 
 ## 📝 Table of Contents
 
@@ -27,15 +27,20 @@ A powerful and flexible React library to effortlessly add robust filtering capab
 
 ## 🧐 About
 
-This package is an ideal solution for implementing advanced, strongly-typed filtering systems. By focusing on managing filter states and interactions, it allows developers to invest their time where it matters most: creating tailored filter UIs and handling business logic.
+This package is an ideal solution for implementing advanced, strongly-typed filtering systems. By focusing on managing
+filter states and interactions, it allows developers to invest their time when it matters most: creating tailored
+filter UIs and handling business logic.
 
 ### Key Features
-- Simplified State Management: Offload the complexity of managing filter states, freeing you to focus on building filter-specific UI and business logic.
-- Dynamic Badge System: Automatically generate badges for applied filters, offering quick access to remove or modify them.
-- Customizable UI: Define the rendering of badges, sidepanel items & content for each filter.
-- Overridable Styles: Customize all class names, or use the provided HOC to style the component once and return a tailored version.
-- Strongly Typed: Built with TypeScript, ensuring a type-safe and robust developer experience.
 
+- Simplified State Management: Offload the complexity of managing filter states, freeing you to focus on building
+  filter-specific UI and business logic.
+- Dynamic Badge System: Automatically generate badges for applied filters, offering quick access to remove or modify
+  them.
+- Customizable UI: Define the rendering of badges, side panel items & content for each filter.
+- Overridable Styles: Customize all class names, or use the provided HOC to style the component once and return a
+  tailored version.
+- Strongly Typed: Built with TypeScript, ensuring a type-safe and robust developer experience.
 
 ## 🎥 Demo / Working
 
@@ -47,31 +52,33 @@ This package is an ideal solution for implementing advanced, strongly-typed filt
 
 ## 🏁 Getting Started
 
-
 ### Installation
+
 Make sure you have node version >= 16 and react version >= 16
 
-```
+```bash
 npm i @swypex/refilter
 ``` 
 
-Import this style sheet 
+Import this style sheet
 
-```
+```css
 @import '~@swypex/refilter/output/main.css';
 ```
 
 ## 🎈 Usage
 
-### Default Swypex design  
-```
+### Default Swypex design
+
+```tsx
 import { GenericFilter } from '@swypex/refilter';
 
 <GenericFilter />
 ```
 
 ### Custom styled generic filter
-```
+
+```tsx
 import { createStyledGenericFilter } from '@swypex/refilter';
 
 export const StyledGenericFilter = createStyledGenericFilter({
@@ -83,8 +90,10 @@ import { StyledGenericFilter as GenericFilter } from '@/components/GenericFilter
 
 <GenericFilter />
 ```
-### Specific style for the filter 
-```
+
+### Specific style for the filter
+
+```tsx
 import { GenericFilter } from '@swypex/refilter';
 
 <GenericFilter
@@ -93,10 +102,12 @@ import { GenericFilter } from '@swypex/refilter';
   }}
 />
 ```
-## How to create your filter component
-### the filter component has the constant boilerplate code you need to follow 
 
-```
+## How to create your filter component
+
+### the filter component has the constant boilerplate code you need to follow
+
+```tsx
 export interface FilterComponentValue {
   value: Nullable<boolean>;
 }
@@ -130,6 +141,7 @@ FilterComponent.getBadgeCount = (value: FilterComponentValue) => {
 ```
 
 ## ⛏️ Built Using
+
 - [React](https://react.dev/)
 - [Tailwind](https://tailwindcss.com/)
 - [Typescript](https://www.typescriptlang.org/)
