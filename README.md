@@ -4,6 +4,7 @@
 
 <div align="center">
 
+[![Version](https://img.shields.io/npm/v/@swypex/refilter.svg)](https://www.npmjs.com/package/@swypex/refilter)
 [![Status](https://img.shields.io/badge/status-active-success.svg)](https://github.com/useswype/refilter/)
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/useswype/refilter)](https://github.com/useswype/refilter/pulls)
 [![GitHub Issues](https://img.shields.io/github/issues/useswype/refilter)](https://github.com/useswype/refilter/issues)
