@@ -1,6 +1,6 @@
 {
   "name": "@swypex/refilter",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "author": "Swypex Engineering <eng@swypex.com> (https://www.swypex.com)",
   "description": "React components for filtering a table",
   "type": "module",
