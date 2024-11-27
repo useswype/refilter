@@ -83,6 +83,7 @@ export interface GenericFilterProps<T extends Record<string, any>> {
   setAreFiltersApplied?: (value: boolean) => void;
   classNames?: GenericFilterClassNames;
   filterBtnTitle?: string;
+  filterHeaderTitle?: string;
   resetFiltersShortcuts?: string;
   resetAllButtonTitle?: string;
   applyFiltersButtonTitle?: string;
@@ -100,6 +101,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
   setAreFiltersApplied,
   classNames = {},
   filterBtnTitle = 'Filters',
+  filterHeaderTitle = 'Filters',
   resetFiltersShortcuts = 'Reset Filters',
   resetAllButtonTitle = 'Reset All',
   applyFiltersButtonTitle = 'Apply Filters',
@@ -257,7 +259,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
           {({ close }) => (
             <>
               <div className={classNames.filterHeader}>
-                <p className={classNames.filterHeaderTitle}>Filters</p>
+                <p className={classNames.filterHeaderTitle}>{filterHeaderTitle}</p>
                 <button
                   type="button"
                   className={classNames.closeButton}
