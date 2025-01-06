@@ -23,7 +23,7 @@ const defaultStyles: Required<GenericFilterClassNames> = {
   closeButton:
     'h-7 w-7 rounded-lg border border-gray-400 bg-gray-100 align-middle hover:bg-gray-200',
   filterItemsList:
-    'col-span-1 flex flex-col gap-2 border-e border-gray-300 bg-gray-25 px-2 pt-3',
+    'col-span-1 flex flex-col gap-1.5 border-e border-gray-300 bg-gray-25 p-2 overflow-y-auto',
   resetAll: (isDisabled) =>
     `text-sm font-semibold  ${isDisabled ? 'text-gray-500' : 'text-blue-400'} `,
 
