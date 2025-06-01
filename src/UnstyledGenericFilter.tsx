@@ -47,37 +47,37 @@ export interface GenericFilterClassNames {
 }
 
 export interface FilterComponentProps<V> {
-  title: string;
-  value: V;
-  onChange: (value: V) => void | Promise<void>;
+  title?: string;
+  value?: V;
+  onChange?: (value: V) => void | Promise<void>;
 }
 
 export interface ShortcutComponentProps<V> {
-  title: string;
-  value: V;
-  onChange: (value: V) => void;
-  defaultValue: V;
+  title?: string;
+  value?: V;
+  onChange?: (value: V) => void;
+  defaultValue?: V;
 }
 
 export interface Filterer<T extends Record<string, any>, K extends keyof T> {
   title: string;
   FilterComponent: ComponentType<FilterComponentProps<T[K]>> & {
-    Shortcut: ComponentType<ShortcutComponentProps<T[K]>>;
-    comparator: (a: T[K], b: T[K]) => boolean;
-    getBadgeCount?: (value: T[K]) => number;
+    Shortcut: ComponentType<Partial<ShortcutComponentProps<T[K]>>>;
+    comparator: (a?: T[K], b?: T[K]) => boolean;
+    getBadgeCount?: (value?: T[K]) => number;
   };
   defaultValue: T[K];
   extraProps?: any;
 }
 
 export interface GenericFilterProps<T extends Record<string, any>> {
-  value: T;
-  onChange: (value: T) => void | Promise<void>;
+  value: Partial<T>;
+  onChange: (value: Partial<T>) => void | Promise<void>;
   filterers: {
     [K in keyof T]: Filterer<T, K>;
   };
   order?: Array<keyof T>;
-  onApply: (value: T) => boolean | Promise<boolean>;
+  onApply: (value: Partial<T>) => boolean | Promise<boolean>;
   onFiltererSelect?: (key: keyof T) => void;
   handleRef?: (ref: { resetFilter: () => void }) => void;
   setAreFiltersApplied?: (value: boolean) => void;
@@ -87,7 +87,31 @@ export interface GenericFilterProps<T extends Record<string, any>> {
   resetFiltersShortcuts?: string;
   resetAllButtonTitle?: string;
   applyFiltersButtonTitle?: string;
-  
+}
+
+function getAppliedFilters<T extends Record<string, any>>(
+  currentValue: Partial<T>,
+  defaultValues: T,
+  filterers: { [K in keyof T]: Filterer<T, K> }
+): Partial<T> {
+  const appliedFilters: Partial<T> = {};
+
+  Object.keys(currentValue).forEach((key) => {
+    const typedKey = key as keyof T;
+    const filterer = filterers[typedKey];
+
+    if (
+      filterer &&
+      !filterer.FilterComponent.comparator(
+        currentValue[typedKey],
+        defaultValues[typedKey]
+      )
+    ) {
+      appliedFilters[typedKey] = currentValue[typedKey];
+    }
+  });
+
+  return appliedFilters;
 }
 
 export function UnStyledGenericFilter<T extends Record<string, any>>({
@@ -106,7 +130,8 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
   resetAllButtonTitle = 'Reset All',
   applyFiltersButtonTitle = 'Apply Filters',
 }: GenericFilterProps<T>) {
-  const [appliedFilterValue, setAppliedFilterValue] = useState<T>(value);
+  const [appliedFilterValue, setAppliedFilterValue] =
+    useState<Partial<T>>(value);
 
   const filterItemArray = useMemo(() => {
     const orderedFilterItems =
@@ -151,20 +176,30 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
   const [isApplyLoading, setIsApplyLoading] = useState(false);
 
   const onChange = useCallback(
-    (value: T): void | Promise<void> => {
-      void propOnChange(value);
+    (newValue: Partial<T>): void | Promise<void> => {
+      const appliedFilters = getAppliedFilters(
+        newValue,
+        defaultValues,
+        filterers
+      );
+      void propOnChange(appliedFilters);
     },
-    [propOnChange]
+    [propOnChange, defaultValues, filterers]
   );
 
   const [active, setActive] = useState(filterItemArray[0][0]);
 
   const activeFilterer = filterers[active];
 
-  async function handleApply(newValue: T): Promise<void> {
+  async function handleApply(newValue: Partial<T>): Promise<void> {
     setIsApplyLoading(true);
 
-    const filtersApplied = await onApply(newValue);
+    const appliedFilters = getAppliedFilters(
+      newValue,
+      defaultValues,
+      filterers
+    );
+    const filtersApplied = await onApply(appliedFilters);
 
     if (filtersApplied) {
       setAppliedFilterValue(newValue);
