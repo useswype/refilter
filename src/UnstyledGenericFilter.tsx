@@ -1,6 +1,8 @@
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
 
 import {
+  Dispatch,
+  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -10,7 +12,7 @@ import {
 
 import { ShortcutSkeleton } from './ShortcutSkeleton';
 
-import { FilterContext } from './utils';
+import { FilterContext, parseFilters, resetFilters, stringifyFilters } from './utils';
 
 import CloseIcon from './assets/close.svg';
 import FilterBtnIcon from './assets/filter_btn_icon.svg';
@@ -65,21 +67,29 @@ export interface Filterer<T extends Record<string, any>, K extends keyof T> {
     Shortcut: ComponentType<ShortcutComponentProps<T[K]>>;
     comparator: (a: T[K], b: T[K]) => boolean;
     getBadgeCount?: (value: T[K]) => number;
+    stringify: (value: T[K], defaultValue: T[K]) => string | null;
+    parse: (string: string, defaultValue: T[K]) => T[K];
   };
   defaultValue: T[K];
   extraProps?: any;
 }
 
+export interface GenericFilterHandleRef<T extends Record<string, any>> {
+  resetFilter: () => void;
+  apply: (value: T) => void;
+  stringify: (value: T) => string;
+  parse: (string: string) => T;
+}
+
 export interface GenericFilterProps<T extends Record<string, any>> {
-  value: T;
-  onChange: (value: T) => void | Promise<void>;
+  onChange?: (value: T) => void | Promise<void>;
   filterers: {
     [K in keyof T]: Filterer<T, K>;
   };
   order?: Array<keyof T>;
   onApply: (value: T) => boolean | Promise<boolean>;
   onFiltererSelect?: (key: keyof T) => void;
-  handleRef?: (ref: { resetFilter: () => void }) => void;
+  handleRef?: (ref: GenericFilterHandleRef<T>) => void;
   setAreFiltersApplied?: (value: boolean) => void;
   classNames?: GenericFilterClassNames;
   filterBtnTitle?: string;
@@ -92,7 +102,6 @@ export interface GenericFilterProps<T extends Record<string, any>> {
 
 export function UnStyledGenericFilter<T extends Record<string, any>>({
   onChange: propOnChange,
-  value,
   filterers,
   order,
   onApply,
@@ -106,13 +115,23 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
   resetAllButtonTitle = 'Reset All',
   applyFiltersButtonTitle = 'Apply Filters',
 }: GenericFilterProps<T>) {
-  const [appliedFilterValue, setAppliedFilterValue] = useState<T>(value);
 
   const filterItemArray = useMemo(() => {
     const orderedFilterItems =
       order !== undefined ? order : (Object.keys(filterers) as Array<keyof T>);
     return orderedFilterItems.map((item) => [item, filterers[item]] as const);
   }, [order, filterers]);
+
+    const [value, setValue] = useState(
+    Object.fromEntries(
+      filterItemArray.map(([key, val]) => [key, val.defaultValue])
+    ) as T
+  );
+  const [appliedFilterValue, _setAppliedFilterValue] = useState<T>(value);
+
+  const setAppliedFilterValue: Dispatch<SetStateAction<T>> = (arg) => {
+    _setAppliedFilterValue(arg);
+  };
 
   const haveFiltersChanged = !filterItemArray.every(([key, filterer]) => {
     const result = filterer.FilterComponent.comparator(
@@ -152,7 +171,10 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
 
   const onChange = useCallback(
     (value: T): void | Promise<void> => {
-      void propOnChange(value);
+      setValue(value);
+      if (propOnChange) {
+        void propOnChange(value);
+      }
     },
     [propOnChange]
   );
@@ -172,14 +194,25 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
     setIsApplyLoading(false);
   }
 
+  const refApply = useCallback((value: T) => {
+    setValue(value);
+    setAppliedFilterValue(value);
+  }, []);
+
   const ref = useMemo(
     () => ({
       resetFilter: () => {
-        setAppliedFilterValue(defaultValues);
-        void onChange(defaultValues);
+        resetFilters(defaultValues, setAppliedFilterValue, onChange);
+      },
+      apply: refApply,
+      stringify: (value: T): string => {
+        return stringifyFilters(value, filterItemArray, defaultValues);
+      },
+      parse: (string: string): T => {
+        return parseFilters(string, filterItemArray, defaultValues);
       },
     }),
-    [defaultValues, onChange]
+    [defaultValues, onChange, refApply, filterItemArray, setAppliedFilterValue]
   );
 
   const checkAppliedFilter = useCallback(() => {
