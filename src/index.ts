@@ -6,4 +6,5 @@ export type {
     GenericFilterClassNames,
     GenericFilterProps,
     ShortcutComponentProps,
+    GenericFilterHandleRef,
 } from './UnstyledGenericFilter';
