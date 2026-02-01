@@ -1,4 +1,8 @@
-import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
+import { 
+  Popover, 
+  PopoverButton, 
+  PopoverPanel 
+} from '@headlessui/react';
 
 import {
   Dispatch,
@@ -11,14 +15,19 @@ import {
 } from 'react';
 
 import { ShortcutSkeleton } from './ShortcutSkeleton';
+import { FilterItem } from './FilterItem';
+import { FilterFooter } from './FilterFooter';
 
-import { FilterContext, parseFilters, resetFilters, stringifyFilters } from './utils';
+import { 
+   FilterContext,
+   parseFilters, 
+   resetFilters,
+  stringifyFilters
+} from './utils';
 
 import CloseIcon from './assets/close.svg';
 import FilterBtnIcon from './assets/filter_btn_icon.svg';
 import FilterDownArrow from './assets/filter_down_arrow.svg';
-import FilterItemArrow from './assets/filter_item_arrow.svg';
-import Spinner from './assets/spinner.svg';
 
 export interface GenericFilterClassNames {
   filterContainer?: string;
@@ -97,7 +106,6 @@ export interface GenericFilterProps<T extends Record<string, any>> {
   resetFiltersShortcuts?: string;
   resetAllButtonTitle?: string;
   applyFiltersButtonTitle?: string;
-  
 }
 
 export function UnStyledGenericFilter<T extends Record<string, any>>({
@@ -199,7 +207,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
     setAppliedFilterValue(value);
   }, []);
 
-  const ref = useMemo(
+  const filterHandleRef = useMemo(
     () => ({
       resetFilter: () => {
         resetFilters(defaultValues, setAppliedFilterValue, onChange);
@@ -212,7 +220,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
         return parseFilters(string, filterItemArray, defaultValues);
       },
     }),
-    [defaultValues, onChange, refApply, filterItemArray, setAppliedFilterValue]
+    [defaultValues, refApply, filterItemArray]
   );
 
   const checkAppliedFilter = useCallback(() => {
@@ -227,9 +235,9 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
 
   useEffect(() => {
     if (handleRef) {
-      handleRef(ref);
+      handleRef(filterHandleRef);
     }
-  }, [ref, handleRef]);
+  }, [filterHandleRef, handleRef]);
 
   const disableResetButton = !areFiltersDefault || isApplyLoading;
   const disableApplyFilterButton = !haveFiltersChanged || isApplyLoading;
@@ -314,41 +322,18 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                     ? getBadgeCount(value[key])
                     : 0;
                   return (
-                    <div key={`filter-button-${key.toString()}`}>
-                      <button
-                        onClick={() => {
-                          onFiltererSelect?.(key);
-                          setActive(key);
-                        }}
-                        className={classNames.filterItem ? classNames.filterItem(key === active) : ''}
-                      >
-                        <div className={classNames.filterItemContent}>
-                          <div className={classNames.filterItemTitle}>
-                            <span className="px-4 text-sm">{title}</span>
-                          </div>
-
-                          <div className={classNames.badge}>
-                            <div className={classNames.badgeContainer}>
-                              {!!badgeCount && (
-                                <div className={classNames.badgeTitleContainer}>
-                                  <span className={classNames.badgeTitle}>
-                                    {badgeCount}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className={classNames.filterItemArrowContainer}>
-                            {key === active && (
-                              <div className={classNames.filterItemArrow}>
-                                <FilterItemArrow />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </button>
-                    </div>
+                    <FilterItem
+                      key={`filter-button-${key.toString()}`}
+                      itemKey={key}
+                      title={title}
+                      badgeCount={badgeCount}
+                      isActive={key === active}
+                      onSelect={(selectedKey) => {
+                        onFiltererSelect?.(selectedKey);
+                        setActive(selectedKey);
+                      }}
+                      classNames={classNames}
+                    />
                   );
                 })}
               </ul>
@@ -362,30 +347,22 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                   {...activeFilterer.extraProps}
                 />
               </div>
-              <div className={classNames.filterFooter}>
-                <button
-                  className={classNames.resetAll ? classNames.resetAll(disableResetButton) : ''} 
-                  disabled={disableResetButton}
-                  onClick={async () => {
-                    void onChange(defaultValues);
-                    void handleApply(defaultValues);
-                  }}
-                >
-                  {resetAllButtonTitle}
-                </button>
-                <button
-                  type="button"
-                  className={classNames.applyButton}
-                  disabled={disableApplyFilterButton}
-                  onClick={async () => {
-                    await handleApply(value);
-                    close();
-                  }}
-                >
-                  {isApplyLoading && <Spinner className="animate-spin"/>}
-                  {!isApplyLoading ? applyFiltersButtonTitle : ''}
-                </button>
-              </div>
+              <FilterFooter
+                disableResetButton={disableResetButton}
+                disableApplyButton={disableApplyFilterButton}
+                isApplyLoading={isApplyLoading}
+                resetAllButtonTitle={resetAllButtonTitle}
+                applyFiltersButtonTitle={applyFiltersButtonTitle}
+                onReset={async () => {
+                  void onChange(defaultValues);
+                  void handleApply(defaultValues);
+                }}
+                onApply={async () => {
+                  await handleApply(value);
+                  close();
+                }}
+                classNames={classNames}
+              />
             </>
           )}
         </PopoverPanel>
