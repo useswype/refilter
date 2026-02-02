@@ -19,10 +19,10 @@ import { FilterItem } from './FilterItem';
 import { FilterFooter } from './FilterFooter';
 
 import { 
-   FilterContext,
-   parseFilters, 
-   resetFilters,
-  stringifyFilters
+  FilterContext,
+  resetFilters,
+  encodeFilters,
+  decodeFilters
 } from './utils';
 
 import CloseIcon from './assets/close.svg';
@@ -76,8 +76,8 @@ export interface Filterer<T extends Record<string, any>, K extends keyof T> {
     Shortcut: ComponentType<ShortcutComponentProps<T[K]>>;
     comparator: (a: T[K], b: T[K]) => boolean;
     getBadgeCount?: (value: T[K]) => number;
-    stringify: (value: T[K], defaultValue: T[K]) => string | null;
-    parse: (string: string, defaultValue: T[K]) => T[K];
+    encode: (value: T[K], defaultValue: T[K]) => string | null;
+    decode: (string: string, defaultValue: T[K]) => T[K];
   };
   defaultValue: T[K];
   extraProps?: any;
@@ -86,8 +86,8 @@ export interface Filterer<T extends Record<string, any>, K extends keyof T> {
 export interface GenericFilterHandleRef<T extends Record<string, any>> {
   resetFilter: () => void;
   apply: (value: T) => void;
-  stringify: (value: T) => string;
-  parse: (string: string) => T;
+  encode: (value: T) => string;
+  decode: (string: string) => T;
 }
 
 export interface GenericFilterProps<T extends Record<string, any>> {
@@ -213,11 +213,11 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
         resetFilters(defaultValues, setAppliedFilterValue, onChange);
       },
       apply: refApply,
-      stringify: (value: T): string => {
-        return stringifyFilters(value, filterItemArray, defaultValues);
+      encode: (value: T): string => {
+        return encodeFilters(value, filterItemArray, defaultValues);
       },
-      parse: (string: string): T => {
-        return parseFilters(string, filterItemArray, defaultValues);
+      decode: (string: string): T => {
+        return decodeFilters(string, filterItemArray, defaultValues);
       },
     }),
     [defaultValues, refApply, filterItemArray]

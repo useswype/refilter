@@ -22,7 +22,7 @@ export function useFilter<T>(): FilterData<T> {
  * @param defaultValues - Default values for each filter
  * @returns URL-encoded query string of non-default filter values
  */
-export function stringifyFilters<T extends Record<string, any>>(
+export function encodeFilters<T extends Record<string, any>>(
   value: T,
   filterItemArray: ReadonlyArray<readonly [keyof T, Filterer<T, keyof T>]>,
   defaultValues: T
@@ -30,7 +30,7 @@ export function stringifyFilters<T extends Record<string, any>>(
   const filterEntries = filterItemArray
     .map(([key, filter]) => [
       key,
-      filter.FilterComponent.stringify(value[key], defaultValues[key]),
+      filter.FilterComponent.encode(value[key], defaultValues[key]),
     ])
     .filter(([, stringValue]) => stringValue != null);
 
@@ -51,7 +51,7 @@ export function stringifyFilters<T extends Record<string, any>>(
  * @param defaultValues - Default values to use when parsing fails or values are missing
  * @returns Parsed filter values object
  */
-export function parseFilters<T extends Record<string, any>>(
+export function decodeFilters<T extends Record<string, any>>(
   queryString: string,
   filterItemArray: ReadonlyArray<readonly [keyof T, Filterer<T, keyof T>]>,
   defaultValues: T
@@ -60,7 +60,7 @@ export function parseFilters<T extends Record<string, any>>(
 
   const filterEntries = filterItemArray.map(([key, filter]) => [
     key,
-    filter.FilterComponent.parse(
+    filter.FilterComponent.decode(
       params.get(key as string) ?? '',
       defaultValues[key]
     ),
