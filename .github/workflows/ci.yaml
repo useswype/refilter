@@ -35,4 +35,4 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: output
-          path: output/
+          path: output/${{ matrix.node-version }}/
