@@ -1,4 +1,11 @@
-@import 'tailwindcss';
+/* Keep package defaults below the host's Tailwind utilities. */
+@layer theme, base, components, utilities;
+
+/* Include theme and utilities without installing a second Preflight reset. */
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(components.refilter) source(none);
+
+@source './';
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,

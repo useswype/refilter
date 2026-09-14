@@ -20,7 +20,7 @@ const config = [
         dir: 'output',
         format: 'es',
         sourcemap: true,
-        banner,
+        banner: `${banner}\nimport './main.css';`,
       },
     ],
     plugins: [typescript({ tsconfig: './tsconfig.json' }), svgr(), nodeResolve({ resolveOnly: ['tailwind-merge', '@headlessui/react', 'qs'] })],
