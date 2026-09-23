@@ -9,14 +9,14 @@ const defaultStyles: Required<GenericFilterClassNames> = {
   filterContainer: 'flex overflow-hidden',
   filterContent: 'flex items-center gap-4 overflow-x-auto',
   filterButton:
-    'flex items-center justify-center gap-1 rounded-lg border border-gray-200 p-1 shadow-filter-button focus:outline-none',
+    'flex items-center justify-center gap-1 rounded-lg border border-gray-200 p-1 shadow-filter-button focus:outline-hidden',
   filterItemsContainer:
-    'flex gap-3 overflow-hidden overflow-x-auto [&::-webkit-scrollbar]:hidden [&>*]:shrink-0 [&>*]:basis-[max-content]',
+    'flex gap-3 overflow-hidden overflow-x-auto [&::-webkit-scrollbar]:hidden *:shrink-0 *:basis-[max-content]',
   filterButtonTitle: 'text-sm font-medium text-gray-900',
   resetFilterContainer: 'flex items-center justify-end ps-12',
-  resetFilterTitle: 'flex-shrink-0 text-sm font-medium text-blue-400',
+  resetFilterTitle: 'shrink-0 text-sm font-medium text-blue-400',
   filterModalContainer: 
-    'absolute z-[99] mt-1 grid h-[520px] w-11/12 grid-cols-3 grid-rows-[auto,1fr] flex-col overflow-hidden rounded-xl bg-white shadow-popup lg:w-2/3 2xl:w-1/2',
+    'absolute z-99 mt-1 grid h-[520px] w-11/12 grid-cols-3 grid-rows-[auto_1fr] flex-col overflow-hidden rounded-xl bg-white shadow-popup lg:w-2/3 2xl:w-1/2',
   filterHeader:
     'col-span-4 flex h-fit items-center justify-between border-b p-4',
   filterHeaderTitle: 'text-sm font-normal text-gray-900',
