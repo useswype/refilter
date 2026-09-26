@@ -1,3 +1,5 @@
+import './main.css';
+
 export * from './GenericFilter';
 export * from './createStyledGenericFilter';
 export type {

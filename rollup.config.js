@@ -20,11 +20,11 @@ const config = [
         dir: 'output',
         format: 'es',
         sourcemap: true,
-        banner: `${banner}\nimport './main.css';`,
+        banner,
       },
     ],
     plugins: [typescript({ tsconfig: './tsconfig.json' }), svgr(), nodeResolve({ resolveOnly: ['tailwind-merge', '@headlessui/react', 'qs'] })],
-    external: ['react', 'react-dom', 'react/jsx-runtime'],
+    external: ['react', 'react-dom', 'react/jsx-runtime', /\.css$/],
   },
   {
     input: 'output/types/index.d.ts',
@@ -37,7 +37,7 @@ const config = [
       dts(),
     ],
     external: [
-      '/\.css$/',
+      /\.css$/,
     ]
 
   },
