@@ -63,12 +63,6 @@ Make sure you have node version >= 16 and react version >= 16
 npm i @swypex/refilter
 ``` 
 
-Import this style sheet
-
-```css
-@import '~@swypex/refilter/output/main.css';
-```
-
 ## 🎈 Usage
 
 ### Default Swypex design
