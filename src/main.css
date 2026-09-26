@@ -1,4 +1,6 @@
-@import 'tailwindcss';
+/* Host theme values take precedence over package theme values. */
+@import 'tailwindcss/theme.css' layer(theme.refilter);
+@import 'tailwindcss/utilities.css' layer(components.refilter);
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
