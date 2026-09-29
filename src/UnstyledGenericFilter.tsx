@@ -18,11 +18,12 @@ import { ShortcutSkeleton } from './ShortcutSkeleton';
 import { FilterItem } from './FilterItem';
 import { FilterFooter } from './FilterFooter';
 
+import { FilterContext } from './FilterContext';
 import { 
-  FilterContext,
+  type FilterSchema,
   resetFilters,
-  encodeFilters,
-  decodeFilters
+  encode,
+  decode
 } from './utils';
 
 import CloseIcon from './assets/close.svg';
@@ -91,6 +92,8 @@ export interface GenericFilterHandleRef<T extends Record<string, any>> {
 }
 
 export interface GenericFilterProps<T extends Record<string, any>> {
+  /** Initial draft and applied values. Used only on the first render. */
+  initialValue?: T;
   onChange?: (value: T) => void | Promise<void>;
   filterers: {
     [K in keyof T]: Filterer<T, K>;
@@ -109,6 +112,7 @@ export interface GenericFilterProps<T extends Record<string, any>> {
 }
 
 export function UnStyledGenericFilter<T extends Record<string, any>>({
+  initialValue,
   onChange: propOnChange,
   filterers,
   order,
@@ -130,11 +134,16 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
     return orderedFilterItems.map((item) => [item, filterers[item]] as const);
   }, [order, filterers]);
 
-    const [value, setValue] = useState(
-    Object.fromEntries(
-      filterItemArray.map(([key, val]) => [key, val.defaultValue])
-    ) as T
-  );
+  const defaultValues = useMemo(() => {
+    return Object.fromEntries(
+      Object.entries(filterers).map(([key, filterer]) => [
+        key,
+        filterer.defaultValue,
+      ])
+    ) as T;
+  }, [filterers]);
+
+  const [value, setValue] = useState<T>(() => initialValue ?? defaultValues);
   const [appliedFilterValue, _setAppliedFilterValue] = useState<T>(value);
 
   const setAppliedFilterValue: Dispatch<SetStateAction<T>> = (arg) => {
@@ -148,12 +157,6 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
     );
     return result;
   });
-
-  const defaultValues = useMemo(() => {
-    return Object.fromEntries(
-      filterItemArray.map(([key, filterer]) => [key, filterer.defaultValue])
-    ) as T;
-  }, [filterItemArray]);
 
   const areFiltersDefault = useMemo(() => {
     return !filterItemArray.every(([key, filterer]) => {
@@ -207,6 +210,20 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
     setAppliedFilterValue(value);
   }, []);
 
+  const filterSchema = useMemo(() => {
+    const schema = {} as FilterSchema<T>;
+    for (const [key, filterer] of filterItemArray) {
+      schema[key] = {
+        defaultValue: filterer.defaultValue,
+        encode: (value, defaultValue) =>
+          filterer.FilterComponent.encode(value, defaultValue),
+        decode: (raw, defaultValue) =>
+          filterer.FilterComponent.decode(raw, defaultValue),
+      };
+    }
+    return schema;
+  }, [filterItemArray]);
+
   const filterHandleRef = useMemo(
     () => ({
       resetFilter: () => {
@@ -214,13 +231,13 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
       },
       apply: refApply,
       encode: (value: T): string => {
-        return encodeFilters(value, filterItemArray, defaultValues);
+        return encode<T>(value, filterSchema);
       },
       decode: (string: string): T => {
-        return decodeFilters(string, filterItemArray, defaultValues);
+        return decode<T>(string, filterSchema);
       },
     }),
-    [defaultValues, refApply, filterItemArray]
+    [defaultValues, refApply, filterSchema]
   );
 
   const checkAppliedFilter = useCallback(() => {

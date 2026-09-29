@@ -1,44 +1,32 @@
-import { createContext, useContext } from 'react';
-import { Filterer } from './UnstyledGenericFilter';
-
-interface FilterData<T> {
-  value: T;
-  onChange: (value: T) => void;
+/** Conversion functions and the default value for one filter. */
+export interface FilterField<T> {
+  defaultValue: T;
+  encode: (value: T, defaultValue: T) => string | null;
+  decode: (raw: string, defaultValue: T) => T;
 }
 
-export const FilterContext = createContext({});
-
-export function useFilter<T>(): FilterData<T> {
-  return useContext(FilterContext) as FilterData<T>;
-}
-
+export type FilterSchema<T extends Record<string, any>> = {
+  [K in keyof T]: FilterField<T[K]>;
+};
 
 /**
  * Stringifies filter values into a URL-safe query string format.
  * Filters out null and undefined values to keep URLs clean.
  *
- * @param value - The current filter values object
- * @param filterItemArray - Array of filter item entries with their configurations
- * @param defaultValues - Default values for each filter
+ * @param values - The current filter values object
+ * @param schema - Conversion functions and default values for each filter
  * @returns URL-encoded query string of non-default filter values
  */
-export function encodeFilters<T extends Record<string, any>>(
-  value: T,
-  filterItemArray: ReadonlyArray<readonly [keyof T, Filterer<T, keyof T>]>,
-  defaultValues: T
+export function encode<T extends Record<string, any>>(
+  values: T,
+  schema: FilterSchema<T>
 ): string {
-  const filterEntries = filterItemArray
-    .map(([key, filter]) => [
-      key,
-      filter.FilterComponent.encode(value[key], defaultValues[key]),
-    ])
-    .filter(([, stringValue]) => stringValue != null);
-
   const params = new URLSearchParams();
-  filterEntries.forEach(([key, stringValue]) => {
-    params.set(key as string, stringValue as string);
-  });
-
+  for (const key of Object.keys(schema)) {
+    const field = schema[key];
+    const raw = field.encode(values[key], field.defaultValue);
+    if (raw != null) params.set(key, raw);
+  }
   return params.toString();
 }
 
@@ -46,27 +34,21 @@ export function encodeFilters<T extends Record<string, any>>(
  * Parses a query string into filter values object.
  * Uses each filter's parse method to convert string values back to their proper types.
  *
- * @param queryString - The URL query string to parse
- * @param filterItemArray - Array of filter item entries with their configurations
- * @param defaultValues - Default values to use when parsing fails or values are missing
+ * @param encoded - The URL query string to parse
+ * @param schema - Conversion functions and default values for each filter
  * @returns Parsed filter values object
  */
-export function decodeFilters<T extends Record<string, any>>(
-  queryString: string,
-  filterItemArray: ReadonlyArray<readonly [keyof T, Filterer<T, keyof T>]>,
-  defaultValues: T
+export function decode<T extends Record<string, any>>(
+  encoded: string,
+  schema: FilterSchema<T>
 ): T {
-  const params = new URLSearchParams(queryString);
-
-  const filterEntries = filterItemArray.map(([key, filter]) => [
-    key,
-    filter.FilterComponent.decode(
-      params.get(key as string) ?? '',
-      defaultValues[key]
-    ),
-  ]);
-
-  return Object.fromEntries(filterEntries) as T;
+  const params = new URLSearchParams(encoded);
+  return Object.fromEntries(
+    Object.keys(schema).map((key) => {
+      const field = schema[key];
+      return [key, field.decode(params.get(key) ?? '', field.defaultValue)];
+    })
+  ) as T;
 }
 
 /**
