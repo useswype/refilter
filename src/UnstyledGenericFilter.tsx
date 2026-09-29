@@ -1,12 +1,6 @@
-import { 
-  Popover, 
-  PopoverButton, 
-  PopoverPanel 
-} from '@headlessui/react';
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
 
 import {
-  Dispatch,
-  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -18,11 +12,13 @@ import { ShortcutSkeleton } from './ShortcutSkeleton';
 import { FilterItem } from './FilterItem';
 import { FilterFooter } from './FilterFooter';
 
-import { 
-  FilterContext,
-  resetFilters,
+import { FilterContext } from './FilterContext';
+import {
   encodeFilters,
-  decodeFilters
+  decodeFilters,
+  type FilterSchema,
+  type FilterKey,
+  type InferFilterValues,
 } from './utils';
 
 import CloseIcon from './assets/close.svg';
@@ -76,10 +72,7 @@ export interface Filterer<T extends Record<string, any>, K extends keyof T> {
     Shortcut: ComponentType<ShortcutComponentProps<T[K]>>;
     comparator: (a: T[K], b: T[K]) => boolean;
     getBadgeCount?: (value: T[K]) => number;
-    encode: (value: T[K], defaultValue: T[K]) => string | null;
-    decode: (string: string, defaultValue: T[K]) => T[K];
   };
-  defaultValue: T[K];
   extraProps?: any;
 }
 
@@ -90,15 +83,23 @@ export interface GenericFilterHandleRef<T extends Record<string, any>> {
   decode: (string: string) => T;
 }
 
-export interface GenericFilterProps<T extends Record<string, any>> {
-  onChange?: (value: T) => void | Promise<void>;
+export interface GenericFilterProps<
+  S extends FilterSchema,
+  F extends FilterKey<S> = FilterKey<S>,
+  K extends F = F,
+> {
+  schema: S;
+  initialValue?: Partial<Pick<InferFilterValues<NoInfer<S>>, NoInfer<K>>>;
+  onChange?: (value: Pick<InferFilterValues<S>, K>) => void | Promise<void>;
   filterers: {
-    [K in keyof T]: Filterer<T, K>;
+    [P in F]: Filterer<InferFilterValues<NoInfer<S>>, P>;
   };
-  order?: Array<keyof T>;
-  onApply: (value: T) => boolean | Promise<boolean>;
-  onFiltererSelect?: (key: keyof T) => void;
-  handleRef?: (ref: GenericFilterHandleRef<T>) => void;
+  order?: readonly K[];
+  onApply: (value: Pick<InferFilterValues<S>, K>) => boolean | Promise<boolean>;
+  onFiltererSelect?: (key: K) => void;
+  handleRef?: (
+    ref: GenericFilterHandleRef<Pick<InferFilterValues<S>, K>>
+  ) => void;
   setAreFiltersApplied?: (value: boolean) => void;
   classNames?: GenericFilterClassNames;
   filterBtnTitle?: string;
@@ -108,7 +109,13 @@ export interface GenericFilterProps<T extends Record<string, any>> {
   applyFiltersButtonTitle?: string;
 }
 
-export function UnStyledGenericFilter<T extends Record<string, any>>({
+export function UnStyledGenericFilter<
+  S extends FilterSchema,
+  F extends FilterKey<S> = FilterKey<S>,
+  K extends F = F,
+>({
+  schema,
+  initialValue,
   onChange: propOnChange,
   filterers,
   order,
@@ -122,24 +129,37 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
   resetFiltersShortcuts = 'Reset Filters',
   resetAllButtonTitle = 'Reset All',
   applyFiltersButtonTitle = 'Apply Filters',
-}: GenericFilterProps<T>) {
+}: GenericFilterProps<S, F, K>) {
+  type T = Pick<InferFilterValues<S>, K>;
 
-  const filterItemArray = useMemo(() => {
-    const orderedFilterItems =
-      order !== undefined ? order : (Object.keys(filterers) as Array<keyof T>);
-    return orderedFilterItems.map((item) => [item, filterers[item]] as const);
-  }, [order, filterers]);
-
-    const [value, setValue] = useState(
-    Object.fromEntries(
-      filterItemArray.map(([key, val]) => [key, val.defaultValue])
-    ) as T
+  const keys = useMemo(
+    () => order ?? (Object.keys(filterers) as K[]),
+    [order, filterers]
   );
-  const [appliedFilterValue, _setAppliedFilterValue] = useState<T>(value);
+  const filterItemArray = useMemo(
+    () => keys.map((key) => [key, filterers[key]] as const),
+    [keys, filterers]
+  );
+  const defaultValues = useMemo(
+    () =>
+      Object.fromEntries(
+        keys.map((key) => [key, schema[key].defaultValue])
+      ) as T,
+    [keys, schema]
+  );
 
-  const setAppliedFilterValue: Dispatch<SetStateAction<T>> = (arg) => {
-    _setAppliedFilterValue(arg);
-  };
+  const [value, setValue] = useState<T>(
+    () =>
+      Object.fromEntries(
+        keys.map((key) => [
+          key,
+          initialValue?.[key] === undefined
+            ? schema[key].defaultValue
+            : initialValue[key],
+        ])
+      ) as T
+  );
+  const [appliedFilterValue, setAppliedFilterValue] = useState<T>(value);
 
   const haveFiltersChanged = !filterItemArray.every(([key, filterer]) => {
     const result = filterer.FilterComponent.comparator(
@@ -148,12 +168,6 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
     );
     return result;
   });
-
-  const defaultValues = useMemo(() => {
-    return Object.fromEntries(
-      filterItemArray.map(([key, filterer]) => [key, filterer.defaultValue])
-    ) as T;
-  }, [filterItemArray]);
 
   const areFiltersDefault = useMemo(() => {
     return !filterItemArray.every(([key, filterer]) => {
@@ -187,9 +201,12 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
     [propOnChange]
   );
 
-  const [active, setActive] = useState(filterItemArray[0][0]);
+  const [active, setActive] = useState<K | undefined>(keys[0]);
 
-  const activeFilterer = filterers[active];
+  const activeKey =
+    active !== undefined && keys.includes(active) ? active : keys[0];
+  const activeFilterer =
+    activeKey === undefined ? undefined : filterers[activeKey];
 
   async function handleApply(newValue: T): Promise<void> {
     setIsApplyLoading(true);
@@ -210,17 +227,18 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
   const filterHandleRef = useMemo(
     () => ({
       resetFilter: () => {
-        resetFilters(defaultValues, setAppliedFilterValue, onChange);
+        setAppliedFilterValue(defaultValues);
+        void onChange(defaultValues);
       },
       apply: refApply,
       encode: (value: T): string => {
-        return encodeFilters(value, filterItemArray, defaultValues);
+        return encodeFilters<S, K>(value, schema, { keys });
       },
       decode: (string: string): T => {
-        return decodeFilters(string, filterItemArray, defaultValues);
+        return decodeFilters<S, K>(string, schema, { keys });
       },
     }),
-    [defaultValues, refApply, filterItemArray]
+    [defaultValues, refApply, schema, keys, onChange]
   );
 
   const checkAppliedFilter = useCallback(() => {
@@ -249,12 +267,14 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
           <div className={classNames.filterContent}>
             <PopoverButton className={classNames.filterButton}>
               <FilterBtnIcon />
-              <span className={classNames.filterButtonTitle}>{filterBtnTitle}</span>
+              <span className={classNames.filterButtonTitle}>
+                {filterBtnTitle}
+              </span>
               <FilterDownArrow />
             </PopoverButton>
             <div className={classNames.filterItemsContainer}>
               {filterItemArray.map(([key, filterItem]) => {
-                const { FilterComponent, defaultValue, title } = filterItem;
+                const { FilterComponent, title } = filterItem;
                 if (isApplyLoading) {
                   return (
                     <div key={`shortcut-loading-${key.toString()}`}>
@@ -276,7 +296,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                       void onChange(newValue);
                       void handleApply(newValue);
                     }}
-                    defaultValue={defaultValue}
+                    defaultValue={schema[key].defaultValue}
                   />
                 );
               })}
@@ -291,7 +311,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                 }}
                 className={classNames.resetFilterTitle}
               >
-               {resetFiltersShortcuts}
+                {resetFiltersShortcuts}
               </button>
             </div>
           )}
@@ -300,7 +320,9 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
           {({ close }) => (
             <>
               <div className={classNames.filterHeader}>
-                <p className={classNames.filterHeaderTitle}>{filterHeaderTitle}</p>
+                <p className={classNames.filterHeaderTitle}>
+                  {filterHeaderTitle}
+                </p>
                 <button
                   type="button"
                   className={classNames.closeButton}
@@ -327,7 +349,7 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                       itemKey={key}
                       title={title}
                       badgeCount={badgeCount}
-                      isActive={key === active}
+                      isActive={key === activeKey}
                       onSelect={(selectedKey) => {
                         onFiltererSelect?.(selectedKey);
                         setActive(selectedKey);
@@ -338,14 +360,16 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
                 })}
               </ul>
               <div className={classNames.filterComponentContainer}>
-                <activeFilterer.FilterComponent
-                  title={activeFilterer.title}
-                  value={value[active]}
-                  onChange={async (filterValue) =>
-                    onChange({ ...value, [active]: filterValue })
-                  }
-                  {...activeFilterer.extraProps}
-                />
+                {activeFilterer && activeKey !== undefined && (
+                  <activeFilterer.FilterComponent
+                    title={activeFilterer.title}
+                    value={value[activeKey]}
+                    onChange={async (filterValue) =>
+                      onChange({ ...value, [activeKey]: filterValue })
+                    }
+                    {...activeFilterer.extraProps}
+                  />
+                )}
               </div>
               <FilterFooter
                 disableResetButton={disableResetButton}

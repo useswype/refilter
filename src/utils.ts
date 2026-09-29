@@ -1,103 +1,68 @@
-import { createContext, useContext } from 'react';
-import { Filterer } from './UnstyledGenericFilter';
-
-interface FilterData<T> {
-  value: T;
-  onChange: (value: T) => void;
+/** Application-owned conversion functions and the default for one filter. */
+export interface FilterField<T> {
+  defaultValue: T;
+  encode: (value: T, defaultValue: T) => string | null;
+  decode: (raw: string, defaultValue: T) => T;
 }
 
-export const FilterContext = createContext({});
+// Each field has its own value type; consumers retain it through the schema.
+export type FilterSchema = Record<string, FilterField<any>>;
+export type FilterKey<S extends FilterSchema> = Extract<keyof S, string>;
+export type InferFilterValues<S extends FilterSchema> = {
+  [K in keyof S]: ReturnType<S[K]['decode']>;
+};
 
-export function useFilter<T>(): FilterData<T> {
-  return useContext(FilterContext) as FilterData<T>;
+/** Infer values from the functions, checking defaults without narrowing them. */
+export function defineFilterSchema<T extends Record<string, unknown>>(schema: {
+  [K in keyof T]: {
+    defaultValue: NoInfer<T[K]>;
+    encode: (value: T[K], defaultValue: NoInfer<T[K]>) => string | null;
+    decode: (raw: string, defaultValue: NoInfer<T[K]>) => T[K];
+  };
+}): { [K in keyof T]: FilterField<T[K]> } {
+  return schema;
 }
 
+export interface FilterOptions<K extends string> {
+  keys?: readonly K[];
+}
 
-/**
- * Stringifies filter values into a URL-safe query string format.
- * Filters out null and undefined values to keep URLs clean.
- *
- * @param value - The current filter values object
- * @param filterItemArray - Array of filter item entries with their configurations
- * @param defaultValues - Default values for each filter
- * @returns URL-encoded query string of non-default filter values
- */
-export function encodeFilters<T extends Record<string, any>>(
-  value: T,
-  filterItemArray: ReadonlyArray<readonly [keyof T, Filterer<T, keyof T>]>,
-  defaultValues: T
+/** Encode selected fields using the application's functions and URLSearchParams. */
+export function encodeFilters<
+  S extends FilterSchema,
+  K extends FilterKey<S> = FilterKey<S>,
+>(
+  values: Pick<InferFilterValues<NoInfer<S>>, NoInfer<K>>,
+  schema: S,
+  options?: FilterOptions<K>
 ): string {
-  const filterEntries = filterItemArray
-    .map(([key, filter]) => [
-      key,
-      filter.FilterComponent.encode(value[key], defaultValues[key]),
-    ])
-    .filter(([, stringValue]) => stringValue != null);
-
   const params = new URLSearchParams();
-  filterEntries.forEach(([key, stringValue]) => {
-    params.set(key as string, stringValue as string);
-  });
-
+  for (const key of options?.keys ?? Object.keys(schema)) {
+    const field = schema[key];
+    const raw = field.encode(values[key as K], field.defaultValue);
+    if (raw !== null) params.set(key, raw);
+  }
   return params.toString();
 }
 
-/**
- * Parses a query string into filter values object.
- * Uses each filter's parse method to convert string values back to their proper types.
- *
- * @param queryString - The URL query string to parse
- * @param filterItemArray - Array of filter item entries with their configurations
- * @param defaultValues - Default values to use when parsing fails or values are missing
- * @returns Parsed filter values object
- */
-export function decodeFilters<T extends Record<string, any>>(
-  queryString: string,
-  filterItemArray: ReadonlyArray<readonly [keyof T, Filterer<T, keyof T>]>,
-  defaultValues: T
-): T {
-  const params = new URLSearchParams(queryString);
-
-  const filterEntries = filterItemArray.map(([key, filter]) => [
-    key,
-    filter.FilterComponent.decode(
-      params.get(key as string) ?? '',
-      defaultValues[key]
-    ),
-  ]);
-
-  return Object.fromEntries(filterEntries) as T;
-}
-
-/**
- * Resets all filters to their default values.
- *
- * @param defaultValues - The default values for all filters
- * @param setAppliedFilterValue - State setter for applied filter values
- * @param onChange - Callback to notify parent component of filter changes
- */
-export function resetFilters<T extends Record<string, any>>(
-  defaultValues: T,
-  setAppliedFilterValue: (value: T) => void,
-  onChange: (value: T) => void | Promise<void>
-): void {
-  setAppliedFilterValue(defaultValues);
-  void onChange(defaultValues);
-}
-
-/**
- * Applies filter values without triggering the onApply callback.
- * Used for programmatic filter application (e.g., from URL parameters).
- *
- * @param value - The filter values to apply
- * @param setValue - State setter for current filter values
- * @param setAppliedFilterValue - State setter for applied filter values
- */
-export function applyFilters<T extends Record<string, any>>(
-  value: T,
-  setValue: (value: T) => void,
-  setAppliedFilterValue: (value: T) => void
-): void {
-  setValue(value);
-  setAppliedFilterValue(value);
+/** Decode each selected field independently, falling back if its decoder throws. */
+export function decodeFilters<
+  S extends FilterSchema,
+  K extends FilterKey<S> = FilterKey<S>,
+>(
+  encoded: string,
+  schema: S,
+  options?: FilterOptions<K>
+): Pick<InferFilterValues<S>, K> {
+  const params = new URLSearchParams(encoded);
+  return Object.fromEntries(
+    (options?.keys ?? Object.keys(schema)).map((key) => {
+      const field = schema[key];
+      try {
+        return [key, field.decode(params.get(key) ?? '', field.defaultValue)];
+      } catch {
+        return [key, field.defaultValue];
+      }
+    })
+  ) as Pick<InferFilterValues<S>, K>;
 }

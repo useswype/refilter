@@ -1,7 +1,7 @@
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
 import svgr from '@svgr/rollup';
-import nodeResolve from "@rollup/plugin-node-resolve";
+import nodeResolve from '@rollup/plugin-node-resolve';
 
 import packageJson from './package.json' with { type: 'json' };
 
@@ -14,7 +14,7 @@ const banner = `/*!
 /** @type {import('rollup').RollupOptions} */
 const config = [
   {
-    input: 'src/index.ts',
+    input: { index: 'src/index.ts', utils: 'src/utils.ts' },
     output: [
       {
         dir: 'output',
@@ -23,23 +23,22 @@ const config = [
         banner,
       },
     ],
-    plugins: [typescript({ tsconfig: './tsconfig.json' }), svgr(), nodeResolve({ resolveOnly: ['tailwind-merge', '@headlessui/react', 'qs'] })],
+    plugins: [
+      typescript({ tsconfig: './tsconfig.json' }),
+      svgr(),
+      nodeResolve({ resolveOnly: ['tailwind-merge', '@headlessui/react'] }),
+    ],
     external: ['react', 'react-dom', 'react/jsx-runtime'],
   },
   {
-    input: 'output/types/index.d.ts',
+    input: { index: 'output/types/index.d.ts', utils: 'output/types/utils.d.ts' },
     output: {
-      file: 'output/index.d.ts',
+      dir: 'output',
       format: 'es',
       banner,
     },
-    plugins: [
-      dts(),
-    ],
-    external: [
-      '/\.css$/',
-    ]
-
+    plugins: [dts()],
+    external: ['/.css$/'],
   },
 ];
 
