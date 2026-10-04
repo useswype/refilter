@@ -23,8 +23,8 @@ const config = [
         banner,
       },
     ],
-    plugins: [typescript({ tsconfig: './tsconfig.json' }), svgr(), nodeResolve({ resolveOnly: ['tailwind-merge', '@headlessui/react'] })],
-    external: ['react', 'react-dom', 'react/jsx-runtime', /\.css$/],
+    plugins: [typescript({ tsconfig: './tsconfig.json' }), svgr(), nodeResolve({ resolveOnly: ['tailwind-merge'] })],
+    external: ['react', 'react-dom', 'react/jsx-runtime', '@headlessui/react', /\.css$/],
   },
   {
     input: 'output/types/index.d.ts',
