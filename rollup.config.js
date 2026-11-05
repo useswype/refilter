@@ -14,7 +14,7 @@ const banner = `/*!
 /** @type {import('rollup').RollupOptions} */
 const config = [
   {
-    input: 'src/index.ts',
+    input: { index: 'src/index.ts', utils: 'src/utils.ts' },
     output: [
       {
         dir: 'output',
@@ -27,9 +27,9 @@ const config = [
     external: ['react', 'react-dom', 'react/jsx-runtime', '@headlessui/react', /\.css$/],
   },
   {
-    input: 'output/types/index.d.ts',
+    input: { index: 'output/types/index.d.ts', utils: 'output/types/utils.d.ts' },
     output: {
-      file: 'output/index.d.ts',
+      dir: 'output',
       format: 'es',
       banner,
     },
