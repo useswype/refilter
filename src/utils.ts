@@ -17,7 +17,7 @@ export type FilterSchema<T extends Record<string, any>> = {
  * @param schema - Conversion functions and default values for each filter
  * @returns URL-encoded query string of non-default filter values
  */
-export function encode<T extends Record<string, any>>(
+export function encodeFilters<T extends Record<string, any>>(
   values: T,
   schema: FilterSchema<T>
 ): string {
@@ -38,11 +38,11 @@ export function encode<T extends Record<string, any>>(
  * @param schema - Conversion functions and default values for each filter
  * @returns Parsed filter values object
  */
-export function decode<T extends Record<string, any>>(
-  encoded: string,
+export function decodeFilters<T extends Record<string, any>>(
+  encoded: string | null | undefined,
   schema: FilterSchema<T>
 ): T {
-  const params = new URLSearchParams(encoded);
+  const params = new URLSearchParams(encoded ?? '');
   return Object.fromEntries(
     Object.keys(schema).map((key) => {
       const field = schema[key];
