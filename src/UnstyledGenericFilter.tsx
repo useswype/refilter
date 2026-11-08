@@ -19,7 +19,7 @@ import { FilterItem } from './FilterItem';
 import { FilterFooter } from './FilterFooter';
 
 import { 
-  FilterContext,
+  type FilterSchema,
   resetFilters,
   encodeFilters,
   decodeFilters
@@ -87,10 +87,12 @@ export interface GenericFilterHandleRef<T extends Record<string, any>> {
   resetFilter: () => void;
   apply: (value: T) => void;
   encode: (value: T) => string;
-  decode: (string: string) => T;
+  decode: (string: string | null | undefined) => T;
 }
 
 export interface GenericFilterProps<T extends Record<string, any>> {
+  /** Initial draft and applied values. Used only on the first render. */
+  initialValue?: T;
   onChange?: (value: T) => void | Promise<void>;
   filterers: {
     [K in keyof T]: Filterer<T, K>;
@@ -109,6 +111,7 @@ export interface GenericFilterProps<T extends Record<string, any>> {
 }
 
 export function UnStyledGenericFilter<T extends Record<string, any>>({
+  initialValue,
   onChange: propOnChange,
   filterers,
   order,
@@ -130,11 +133,16 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
     return orderedFilterItems.map((item) => [item, filterers[item]] as const);
   }, [order, filterers]);
 
-    const [value, setValue] = useState(
-    Object.fromEntries(
-      filterItemArray.map(([key, val]) => [key, val.defaultValue])
-    ) as T
-  );
+  const defaultValues = useMemo(() => {
+    return Object.fromEntries(
+      Object.entries(filterers).map(([key, filterer]) => [
+        key,
+        filterer.defaultValue,
+      ])
+    ) as T;
+  }, [filterers]);
+
+  const [value, setValue] = useState<T>(() => initialValue ?? defaultValues);
   const [appliedFilterValue, _setAppliedFilterValue] = useState<T>(value);
 
   const setAppliedFilterValue: Dispatch<SetStateAction<T>> = (arg) => {
@@ -148,12 +156,6 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
     );
     return result;
   });
-
-  const defaultValues = useMemo(() => {
-    return Object.fromEntries(
-      filterItemArray.map(([key, filterer]) => [key, filterer.defaultValue])
-    ) as T;
-  }, [filterItemArray]);
 
   const areFiltersDefault = useMemo(() => {
     return !filterItemArray.every(([key, filterer]) => {
@@ -207,6 +209,20 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
     setAppliedFilterValue(value);
   }, []);
 
+  const filterSchema = useMemo(() => {
+    const schema = {} as FilterSchema<T>;
+    for (const [key, filterer] of filterItemArray) {
+      schema[key] = {
+        defaultValue: filterer.defaultValue,
+        encode: (value, defaultValue) =>
+          filterer.FilterComponent.encode(value, defaultValue),
+        decode: (raw, defaultValue) =>
+          filterer.FilterComponent.decode(raw, defaultValue),
+      };
+    }
+    return schema;
+  }, [filterItemArray]);
+
   const filterHandleRef = useMemo(
     () => ({
       resetFilter: () => {
@@ -214,13 +230,13 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
       },
       apply: refApply,
       encode: (value: T): string => {
-        return encodeFilters(value, filterItemArray, defaultValues);
+        return encodeFilters<T>(value, filterSchema);
       },
-      decode: (string: string): T => {
-        return decodeFilters(string, filterItemArray, defaultValues);
+      decode: (string: string | null | undefined): T => {
+        return decodeFilters<T>(string, filterSchema);
       },
     }),
-    [defaultValues, refApply, filterItemArray]
+    [defaultValues, refApply, filterSchema]
   );
 
   const checkAppliedFilter = useCallback(() => {
@@ -243,130 +259,128 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
   const disableApplyFilterButton = !haveFiltersChanged || isApplyLoading;
 
   return (
-    <FilterContext.Provider value={{ value, onChange }}>
-      <Popover>
-        <div className={classNames.filterContainer}>
-          <div className={classNames.filterContent}>
-            <PopoverButton className={classNames.filterButton}>
-              <FilterBtnIcon />
-              <span className={classNames.filterButtonTitle}>{filterBtnTitle}</span>
-              <FilterDownArrow />
-            </PopoverButton>
-            <div className={classNames.filterItemsContainer}>
-              {filterItemArray.map(([key, filterItem]) => {
-                const { FilterComponent, defaultValue, title } = filterItem;
-                if (isApplyLoading) {
-                  return (
-                    <div key={`shortcut-loading-${key.toString()}`}>
-                      <ShortcutSkeleton />
-                    </div>
-                  );
-                }
-
+    <Popover>
+      <div className={classNames.filterContainer}>
+        <div className={classNames.filterContent}>
+          <PopoverButton className={classNames.filterButton}>
+            <FilterBtnIcon />
+            <span className={classNames.filterButtonTitle}>{filterBtnTitle}</span>
+            <FilterDownArrow />
+          </PopoverButton>
+          <div className={classNames.filterItemsContainer}>
+            {filterItemArray.map(([key, filterItem]) => {
+              const { FilterComponent, defaultValue, title } = filterItem;
+              if (isApplyLoading) {
                 return (
-                  <FilterComponent.Shortcut
+                  <div key={`shortcut-loading-${key.toString()}`}>
+                    <ShortcutSkeleton />
+                  </div>
+                );
+              }
+
+              return (
+                <FilterComponent.Shortcut
+                  title={title}
+                  key={`shortcut-${key.toString()}`}
+                  value={appliedFilterValue[key]}
+                  onChange={async (filterValue) => {
+                    const newValue = {
+                      ...appliedFilterValue,
+                      [key]: filterValue,
+                    };
+                    void onChange(newValue);
+                    void handleApply(newValue);
+                  }}
+                  defaultValue={defaultValue}
+                />
+              );
+            })}
+          </div>
+        </div>
+        {areAppliedFiltersDefault && (
+          <div className={classNames.resetFilterContainer}>
+            <button
+              onClick={async () => {
+                void onChange(defaultValues);
+                void handleApply(defaultValues);
+              }}
+              className={classNames.resetFilterTitle}
+            >
+             {resetFiltersShortcuts}
+            </button>
+          </div>
+        )}
+      </div>
+      <PopoverPanel className={classNames.filterModalContainer}>
+        {({ close }) => (
+          <>
+            <div className={classNames.filterHeader}>
+              <p className={classNames.filterHeaderTitle}>{filterHeaderTitle}</p>
+              <button
+                type="button"
+                className={classNames.closeButton}
+                data-testid="filter-drawer-close-btn"
+                onClick={() => {
+                  close();
+                }}
+              >
+                <CloseIcon className="inline-block stroke-gray-800" />
+              </button>
+            </div>
+            <ul className={classNames.filterItemsList}>
+              {filterItemArray.map(([key, filterItem]) => {
+                const {
+                  title,
+                  FilterComponent: { getBadgeCount },
+                } = filterItem;
+                const badgeCount = getBadgeCount
+                  ? getBadgeCount(value[key])
+                  : 0;
+                return (
+                  <FilterItem
+                    key={`filter-button-${key.toString()}`}
+                    itemKey={key}
                     title={title}
-                    key={`shortcut-${key.toString()}`}
-                    value={appliedFilterValue[key]}
-                    onChange={async (filterValue) => {
-                      const newValue = {
-                        ...appliedFilterValue,
-                        [key]: filterValue,
-                      };
-                      void onChange(newValue);
-                      void handleApply(newValue);
+                    badgeCount={badgeCount}
+                    isActive={key === active}
+                    onSelect={(selectedKey) => {
+                      onFiltererSelect?.(selectedKey);
+                      setActive(selectedKey);
                     }}
-                    defaultValue={defaultValue}
+                    classNames={classNames}
                   />
                 );
               })}
-            </div>
-          </div>
-          {areAppliedFiltersDefault && (
-            <div className={classNames.resetFilterContainer}>
-              <button
-                onClick={async () => {
-                  void onChange(defaultValues);
-                  void handleApply(defaultValues);
-                }}
-                className={classNames.resetFilterTitle}
-              >
-               {resetFiltersShortcuts}
-              </button>
-            </div>
-          )}
-        </div>
-        <PopoverPanel className={classNames.filterModalContainer}>
-          {({ close }) => (
-            <>
-              <div className={classNames.filterHeader}>
-                <p className={classNames.filterHeaderTitle}>{filterHeaderTitle}</p>
-                <button
-                  type="button"
-                  className={classNames.closeButton}
-                  data-testid="filter-drawer-close-btn"
-                  onClick={() => {
-                    close();
-                  }}
-                >
-                  <CloseIcon className="inline-block stroke-gray-800" />
-                </button>
-              </div>
-              <ul className={classNames.filterItemsList}>
-                {filterItemArray.map(([key, filterItem]) => {
-                  const {
-                    title,
-                    FilterComponent: { getBadgeCount },
-                  } = filterItem;
-                  const badgeCount = getBadgeCount
-                    ? getBadgeCount(value[key])
-                    : 0;
-                  return (
-                    <FilterItem
-                      key={`filter-button-${key.toString()}`}
-                      itemKey={key}
-                      title={title}
-                      badgeCount={badgeCount}
-                      isActive={key === active}
-                      onSelect={(selectedKey) => {
-                        onFiltererSelect?.(selectedKey);
-                        setActive(selectedKey);
-                      }}
-                      classNames={classNames}
-                    />
-                  );
-                })}
-              </ul>
-              <div className={classNames.filterComponentContainer}>
-                <activeFilterer.FilterComponent
-                  title={activeFilterer.title}
-                  value={value[active]}
-                  onChange={async (filterValue) =>
-                    onChange({ ...value, [active]: filterValue })
-                  }
-                  {...activeFilterer.extraProps}
-                />
-              </div>
-              <FilterFooter
-                disableResetButton={disableResetButton}
-                disableApplyButton={disableApplyFilterButton}
-                isApplyLoading={isApplyLoading}
-                resetAllButtonTitle={resetAllButtonTitle}
-                applyFiltersButtonTitle={applyFiltersButtonTitle}
-                onReset={async () => {
-                  void onChange(defaultValues);
-                  void handleApply(defaultValues);
-                }}
-                onApply={async () => {
-                  await handleApply(value);
-                  close();
-                }}
-                classNames={classNames}
+            </ul>
+            <div className={classNames.filterComponentContainer}>
+              <activeFilterer.FilterComponent
+                title={activeFilterer.title}
+                value={value[active]}
+                onChange={async (filterValue) =>
+                  onChange({ ...value, [active]: filterValue })
+                }
+                {...activeFilterer.extraProps}
               />
-            </>
-          )}
-        </PopoverPanel>
-      </Popover>
-    </FilterContext.Provider>
+            </div>
+            <FilterFooter
+              disableResetButton={disableResetButton}
+              disableApplyButton={disableApplyFilterButton}
+              isApplyLoading={isApplyLoading}
+              resetAllButtonTitle={resetAllButtonTitle}
+              applyFiltersButtonTitle={applyFiltersButtonTitle}
+              onReset={async () => {
+                void onChange(defaultValues);
+                void handleApply(defaultValues);
+              }}
+              onApply={async () => {
+                await handleApply(value);
+                close();
+              }}
+              classNames={classNames}
+            />
+          </>
+        )}
+      </PopoverPanel>
+    </Popover>
   );
 }
