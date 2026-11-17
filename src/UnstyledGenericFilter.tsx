@@ -28,6 +28,9 @@ import {
 import CloseIcon from './assets/close.svg';
 import FilterBtnIcon from './assets/filter_btn_icon.svg';
 import FilterDownArrow from './assets/filter_down_arrow.svg';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { FreeMode } from 'swiper/modules';
+import type { Swiper as SwiperInstance } from 'swiper';
 
 export interface GenericFilterClassNames {
   filterContainer?: string;
@@ -252,35 +255,58 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
               <span className={classNames.filterButtonTitle}>{filterBtnTitle}</span>
               <FilterDownArrow />
             </PopoverButton>
-            <div className={classNames.filterItemsContainer}>
+            <Swiper
+              className={classNames.filterItemsContainer}
+              modules={[FreeMode]}
+              freeMode
+              slidesPerView="auto"
+              spaceBetween={12}
+            >
               {filterItemArray.map(([key, filterItem]) => {
                 const { FilterComponent, defaultValue, title } = filterItem;
                 if (isApplyLoading) {
                   return (
-                    <div key={`shortcut-loading-${key.toString()}`}>
+                    <SwiperSlide
+                      key={`shortcut-loading-${key.toString()}`}
+                      style={{ width: 'fit-content' }}
+                    >
                       <ShortcutSkeleton />
-                    </div>
+                    </SwiperSlide>
                   );
                 }
 
                 return (
-                  <FilterComponent.Shortcut
-                    title={title}
+                  <SwiperSlide
                     key={`shortcut-${key.toString()}`}
-                    value={appliedFilterValue[key]}
-                    onChange={async (filterValue) => {
-                      const newValue = {
-                        ...appliedFilterValue,
-                        [key]: filterValue,
+                    style={{ width: 'max-content', display: 'flex', gap: 12 }}
+                    className="empty:hidden!"
+                    onClickCapture={(event) => {
+                      const { swiper } = event.currentTarget.closest('.swiper') as HTMLElement & {
+                        swiper?: SwiperInstance & { allowClick: boolean };
                       };
-                      void onChange(newValue);
-                      void handleApply(newValue);
+                      if (swiper?.allowClick === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }
                     }}
-                    defaultValue={defaultValue}
-                  />
+                  >
+                    <FilterComponent.Shortcut
+                      title={title}
+                      value={appliedFilterValue[key]}
+                      onChange={async (filterValue) => {
+                        const newValue = {
+                          ...appliedFilterValue,
+                          [key]: filterValue,
+                        };
+                        void onChange(newValue);
+                        void handleApply(newValue);
+                      }}
+                      defaultValue={defaultValue}
+                    />
+                  </SwiperSlide>
                 );
               })}
-            </div>
+            </Swiper>
           </div>
           {areAppliedFiltersDefault && (
             <div className={classNames.resetFilterContainer}>

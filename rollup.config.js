@@ -24,7 +24,7 @@ const config = [
       },
     ],
     plugins: [typescript({ tsconfig: './tsconfig.json' }), svgr(), nodeResolve({ resolveOnly: ['tailwind-merge'] })],
-    external: ['react', 'react-dom', 'react/jsx-runtime', '@headlessui/react', /\.css$/],
+    external: ['react', 'react-dom', 'react/jsx-runtime', '@headlessui/react', /^swiper(?:\/|$)/, /\.css$/],
   },
   {
     input: 'output/types/index.d.ts',

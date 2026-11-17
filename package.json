@@ -49,6 +49,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
+    "swiper": "^12.2.0",
     "tailwind-merge": "^2.5.4",
     "tslib": "^2.8.1"
   },
