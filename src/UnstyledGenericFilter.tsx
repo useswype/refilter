@@ -261,6 +261,11 @@ export function UnStyledGenericFilter<T extends Record<string, any>>({
               freeMode
               slidesPerView="auto"
               spaceBetween={12}
+              onProgress={(swiper) => {
+                const start = swiper.isBeginning ? 0 : 24;
+                const end = swiper.isEnd ? 0 : 24;
+                swiper.el.style.maskImage = `linear-gradient(to ${swiper.rtlTranslate ? 'left' : 'right'}, transparent, black ${start}px, black calc(100% - ${end}px), transparent)`;
+              }}
             >
               {filterItemArray.map(([key, filterItem]) => {
                 const { FilterComponent, defaultValue, title } = filterItem;
